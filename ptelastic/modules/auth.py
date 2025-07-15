@@ -40,6 +40,8 @@ class Auth:
 
         401 Unauthorized = Authentication is enabled
         200 OK - Authentication is disabled
+
+        If authentication is disabled, a vulnerability and property are added to the JSON result
         """
 
         url = self.args.url
@@ -54,6 +56,8 @@ class Auth:
 
         elif response.status_code == http.HTTPStatus.OK:
             ptprint(f"Authentication is disabled", "VULN", not self.args.json, indent=4)
+            self.ptjsonlib.add_vulnerability("PTV-WEB-ELASTIC-AUTH")
+            self.ptjsonlib.add_properties({"authentication": "disabled"})
 
 
 def run(args, ptjsonlib, helpers, http_client, base_response):
