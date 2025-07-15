@@ -1,8 +1,7 @@
 """
-Elasticsearch test to see if authentication is enabled
+Elasticsearch authentication test
 
-This module implements a test that checks if an Elasticsearch instance has authentication
-enabled or disabled
+This module implements a test that checks if an Elasticsearch instance has authentication enabled or disabled
 
 Contains:
 - Auth class for performing authentication test
@@ -41,7 +40,7 @@ class Auth:
         401 Unauthorized = Authentication is enabled
         200 OK - Authentication is disabled
 
-        If authentication is disabled, a vulnerability and property are added to the JSON result
+        If authentication is disabled, a vulnerability and a property are added to the JSON result
         """
 
         url = self.args.url

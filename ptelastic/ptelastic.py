@@ -66,7 +66,8 @@ class PtElastic:
     def _fetch_initial_response(self) -> None:
         """
         Sends initial HTTP requests to the requested URL.
-        If homepage returns a redirect or a non-200 status code, the script exits early.
+        If homepage returns a redirect or a non-200 status code (401 excluded for the purpose of detecting
+        authentication in auth.py), the script exits early.
         """
         try:
             # Send request to user specified page via <args.url>
