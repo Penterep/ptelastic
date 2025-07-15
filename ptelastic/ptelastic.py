@@ -20,7 +20,11 @@ import argparse
 import importlib
 import os
 import threading
-import sys; sys.path.append(__file__.rsplit("/", 1)[0])
+import sys;
+
+import requests
+
+sys.path.append(__file__.rsplit("/", 1)[0])
 
 from io import StringIO
 from types import ModuleType
@@ -71,7 +75,7 @@ class PtElastic:
             if 300 <= self.base_response.status_code < 400:
                 self.ptjsonlib.end_error(f"Redirect to URL: {self.base_response.headers.get('Location', 'unknown')}", self.args.json)
 
-            elif self.base_response.status_code != 200:
+            elif self.base_response.status_code != 200 and self.base_response.status_code != 401:
                 self.ptjsonlib.end_error(f"Webpage returns status code: {self.base_response.status_code}", self.args.json)
 
             # Send request to nonexistent page

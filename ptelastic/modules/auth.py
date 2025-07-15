@@ -1,7 +1,14 @@
+"""
+Elasticsearch test to see if authentication is enabled
+
+This module implements a test that checks if an Elasticsearch instance has authentication
+enabled by sending a request to the server and checking if we get an HTTP response of 401
+"""
+
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
 
-__TESTLABEL__ = "Example module"
+__TESTLABEL__ = "Elasticsearch authentication test"
 
 
 class ExampleModule:
