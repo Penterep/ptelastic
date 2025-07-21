@@ -69,6 +69,7 @@ class PtElastic:
         If homepage returns a redirect or a non-200 status code (401 excluded for the purpose of detecting
         authentication in auth.py), the script exits early.
         """
+
         try:
             # Send request to user specified page via <args.url>
             self.base_response = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
@@ -82,8 +83,8 @@ class PtElastic:
             # Send request to nonexistent page
             #self.resp_404 = self.http_client.send_request(url=f"{self.args.url}/this-page-does-not-exist-xyz123", method="GET", headers=self.args.headers, allow_redirects=False)
 
-        except requests.exceptions.RequestException as e:
-            self.ptjsonlib.end_error(f"Error retrieving initial responses: {e}", self.args.json)
+        except requests.exceptions.RequestException as error_msg:
+            self.ptjsonlib.end_error(f"Error retrieving initial responses:", details=error_msg, condition=self.args.json)
 
 
     def run_single_module(self, module_name: str) -> None:
