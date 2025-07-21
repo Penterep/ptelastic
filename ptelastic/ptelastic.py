@@ -20,7 +20,11 @@ import argparse
 import importlib
 import os
 import threading
-import sys; sys.path.append(__file__.rsplit("/", 1)[0])
+import sys;
+
+import requests
+
+sys.path.append(__file__.rsplit("/", 1)[0])
 
 from io import StringIO
 from types import ModuleType
@@ -62,7 +66,8 @@ class PtElastic:
     def _fetch_initial_response(self) -> None:
         """
         Sends initial HTTP requests to the requested URL.
-        If homepage returns a redirect or a non-200 status code, the script exits early.
+        If homepage returns a redirect or a non-200 status code (401 excluded for the purpose of detecting
+        authentication in auth.py), the script exits early.
         """
         try:
             # Send request to user specified page via <args.url>
@@ -71,7 +76,7 @@ class PtElastic:
             if 300 <= self.base_response.status_code < 400:
                 self.ptjsonlib.end_error(f"Redirect to URL: {self.base_response.headers.get('Location', 'unknown')}", self.args.json)
 
-            elif self.base_response.status_code != 200:
+            elif self.base_response.status_code != 200 and self.base_response.status_code != 401:
                 self.ptjsonlib.end_error(f"Webpage returns status code: {self.base_response.status_code}", self.args.json)
 
             # Send request to nonexistent page
