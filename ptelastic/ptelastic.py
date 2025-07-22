@@ -63,10 +63,19 @@ class PtElastic:
         ptprint(self.ptjsonlib.get_result_json(), "", self.args.json)
 
 
+    def _check_https(self) -> bool:
+        """
+        Checks to see if we're being redirected to the HTTPS version of the page
+        :return:
+        """
+        return "https://" in self.base_response.headers.get('Location', 'unknown')
+
+
     def _fetch_initial_response(self) -> None:
         """
         Sends initial HTTP requests to the requested URL.
-        If homepage returns a redirect or a non-200 status code (401 excluded for the purpose of detecting
+        If homepage returns a redirect, we check if we're redirected to the HTTPS version of the provided URL, if not or
+        a non-200 status code is returned (401 excluded for the purpose of detecting
         authentication in auth.py), the script exits early.
         """
         try:
@@ -74,7 +83,8 @@ class PtElastic:
             self.base_response = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
 
             if 300 <= self.base_response.status_code < 400:
-                self.ptjsonlib.end_error(f"Redirect to URL: {self.base_response.headers.get('Location', 'unknown')}", self.args.json)
+                if not self._check_https():
+                    self.ptjsonlib.end_error(f"Redirect to URL: {self.base_response.headers.get('Location', 'unknown')}", self.args.json)
 
             elif self.base_response.status_code != 200 and self.base_response.status_code != 401:
                 self.ptjsonlib.end_error(f"Webpage returns status code: {self.base_response.status_code}", self.args.json)
