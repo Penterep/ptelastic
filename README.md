@@ -3,7 +3,7 @@
 
 ## PTELASTIC
 
-Security testing tool for identifying, fingerprinting, and exploiting vulnerabilities in Elasticsearch instances.
+Security testing tool for identifying, fingerprinting, and exploiting vulnerabilities in Elasticsearch instances.  
 The tool:
 - Identifies whether or not Elasticsearch is running on a host
 - Identifies whether it is running on HTTP or HTTPS
@@ -39,6 +39,9 @@ ptelastic -u htttps://www.example.com/
 ```
    -u   --url         <url>           Connect to URL
    -ts  --tests       <test>          Specify one or more tests to perform:
+                       AUTH           Elasticsearch authentication test
+                       HTTPS          Elasticsearch HTTP/S test
+                       IS_ELASTIC     Elasticsearch availability test
 
    -p   --proxy       <proxy>         Set proxy (e.g. http://127.0.0.1:8080)
    -T   --timeout     <miliseconds>   Set timeout (default 10)
@@ -51,6 +54,7 @@ ptelastic -u htttps://www.example.com/
    -v   --version                     Show script version and exit
    -h   --help                        Show this help message and exit
    -j   --json                        Output in JSON format
+
 
 ```
 
