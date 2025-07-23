@@ -4,6 +4,10 @@
 ## PTELASTIC
 
 Security testing tool for identifying, fingerprinting, and exploiting vulnerabilities in Elasticsearch instances.
+The tool:
+- Identifies whether or not Elasticsearch is running on a host
+- Identifies whether it is running on HTTP or HTTPS
+- Identifies whether or not it has authentication enabled
 
 ## Installation
 

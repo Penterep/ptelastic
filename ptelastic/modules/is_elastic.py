@@ -51,7 +51,11 @@ class IsElastic:
             ptprint(f"Sending request to: {url}", "INFO", not self.args.json, colortext=False, indent=4)
             ptprint(f"Returned response status: {response.status_code}", "INFO", not self.args.json, indent=4)
 
-        if "application/json" not in response.headers["content-type"]:
+        try:
+            if "application/json" not in response.headers["content-type"]:
+                ptprint(f"The host is not running ElasticSearch", "VULN", not self.args.json, colortext=False, indent=4)
+                return
+        except KeyError:
             ptprint(f"The host is not running ElasticSearch", "VULN", not self.args.json, colortext=False, indent=4)
             return
 
