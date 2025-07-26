@@ -8,6 +8,10 @@ The tool:
 - Identifies whether or not Elasticsearch is running on a host
 - Identifies whether it is running on HTTP or HTTPS
 - Identifies whether or not it has authentication enabled
+- Enumerates:
+   - Elasticsearch version
+   - Modules, their version and description
+   - Installed plugins and their version
 
 ## Installation
 
