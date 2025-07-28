@@ -264,6 +264,9 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     #args.url = urlunparse(urlparse(args.url)._replace(path='', params='', query='', fragment=''))
 
+    if args.url[-1] != '/':
+        args.url += '/'
+
     print_banner(SCRIPTNAME, __version__, args.json, 0)
     return args
 
