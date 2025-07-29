@@ -30,6 +30,48 @@ class Auth:
 
         self.helpers.print_header(__TESTLABEL__)
 
+
+    def _print_anon_role(self):
+        """
+        This method prints the role of the anonymous user
+        """
+        url = self.args.url + "_security/user"
+        response = self.http_client.send_request(url , method="GET", headers=self.args.headers, allow_redirects=False)
+
+        if response.status_code != http.HTTPStatus.OK:
+            self.ptjsonlib.end_error(f"Webpage returns status code: {response.status_code}", self.args.json)
+
+        users = response.json()
+
+        for user in users.keys():
+            if "anon" in user or "anonymous" in user:
+                ptprint(f"Anonymous role: {', '.join(users[user]['roles'])}", "INFO", not self.args.json, indent=7)
+                return
+
+        ptprint(f"Could not find username which would match 'anonymous' or 'anon' All users: {','.join(users.keys())}",
+                "ERROR", not self.args.json, indent=4)
+
+    def _test_anon_auth(self) -> None:
+        """
+        This method checks to see if authentication is truly disabled or anonymous access is allowed
+        """
+        url = self.args.url + "_xpack?filter_path=features.security"
+        security = self.http_client.send_request(url , method="GET", headers=self.args.headers, allow_redirects=False)
+
+        if security.status_code != http.HTTPStatus.OK:
+            self.ptjsonlib.end_error(f"Webpage returns status code: {security.status_code}", self.args.json)
+
+        security = security.json()
+
+        if not security["features"]["security"]["enabled"]:
+            ptprint(f"Authentication is disabled", "VULN", not self.args.json, indent=4)
+            self.ptjsonlib.add_vulnerability("PTV-WEB-ELASTIC-AUTH")
+            self.ptjsonlib.add_properties({"authentication": "disabled"})
+            return
+
+        ptprint(f"Authentication is enabled, but anonymous access is allowed","VULN", not self.args.json, indent=4)
+        self._print_anon_role()
+
     def run(self) -> None:
         """
         Executes the Elasticsearch authentication test
@@ -54,9 +96,10 @@ class Auth:
             ptprint(f"Authentication is enabled", "VULN", not self.args.json, indent=4)
 
         elif response.status_code == http.HTTPStatus.OK:
-            ptprint(f"Authentication is disabled", "VULN", not self.args.json, indent=4)
-            self.ptjsonlib.add_vulnerability("PTV-WEB-ELASTIC-AUTH")
-            self.ptjsonlib.add_properties({"authentication": "disabled"})
+            self._test_anon_auth()
+
+        else:
+            self.ptjsonlib.end_error(f"Webpage returns status code: {response.status_code}", self.args.json)
 
 
 def run(args, ptjsonlib, helpers, http_client, base_response):
