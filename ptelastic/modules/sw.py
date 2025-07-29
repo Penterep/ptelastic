@@ -135,8 +135,8 @@ class SwTest:
             }
             json_node = self.ptjsonlib.create_node_object("sw", properties=plugin_properties)
             self.ptjsonlib.add_node(json_node)
-            ptprint(f"Found plugin: {plugin_properties['name'], plugin_properties['version']}"
-                    f"On node: {plugin_properties['es_node']}", "INFO", not self.args.json, indent=4)
+            ptprint(f"Found plugin: {plugin_properties['name']} {plugin_properties['version']} "
+                    f"on node: {plugin_properties['es_node']}", "INFO", not self.args.json, indent=4)
 
         return True
 
