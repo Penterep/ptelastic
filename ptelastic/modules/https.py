@@ -42,7 +42,7 @@ class HttpTest:
         """
         response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
 
-        if response.status_code == HTTPStatus.OK:
+        if response.status_code in [HTTPStatus.OK, HTTPStatus.UNAUTHORIZED]:
             ptprint(f"The host is running HTTP", "VULN", not self.args.json, indent=4)
             self.ptjsonlib.add_vulnerability("PTV-ELASTIC-MISC-HTTP")
         else:
