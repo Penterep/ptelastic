@@ -9,6 +9,7 @@ Contains:
 """
 
 import http
+from requests import Response
 from http import HTTPStatus
 from xml.etree.ElementPath import prepare_parent
 
@@ -31,6 +32,11 @@ class IsElastic:
         self.base_response = base_response
 
         self.helpers.print_header(__TESTLABEL__)
+
+
+    def _check_text(self, response: Response) -> bool:
+        return "elasticsearch" in response.text.lower()
+
 
     def run(self) -> None:
         """
@@ -63,7 +69,9 @@ class IsElastic:
             response_json = response.json()
 
             try:
-                if response_json["error"]["root_cause"][0]["type"] == "security_exception":
+                if self._check_text(response):
+                    ptprint(f"The host is running ElasticSearch", "VULN", not self.args.json, colortext=False, indent=4)
+                elif response_json["error"]["root_cause"][0]["type"] == "security_exception":
                     ptprint(f"The host might be running ElasticSearch", "VULN", not self.args.json, colortext=False, indent=4)
             except KeyError:
                 ptprint(f"The host is probably not running ElasticSearch", "VULN", not self.args.json, colortext=False,
@@ -74,7 +82,8 @@ class IsElastic:
                 if response.headers["X-elastic-product"] == "Elasticsearch":
                     ptprint(f"The host is running ElasticSearch", "VULN", not self.args.json, colortext=False, indent=4)
             except KeyError:
-                ptprint(f"The host is not running ElasticSearch", "VULN", not self.args.json, colortext=False, indent=4)
+                if self._check_text(response):
+                    ptprint(f"The host is running ElasticSearch", "VULN", not self.args.json, colortext=False, indent=4)
 
         else:
             ptprint(f"The host is not running ElasticSearch", "VULN", not self.args.json, colortext=False, indent=4)
