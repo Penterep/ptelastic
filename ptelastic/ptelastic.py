@@ -263,7 +263,7 @@ def parse_args() -> argparse.Namespace:
 
     args = parser.parse_args()
     #args.url = urlunparse(urlparse(args.url)._replace(path='', params='', query='', fragment=''))
-
+    args.proxy = {"http": args.proxy, "https": args.proxy}
     if args.url[-1] != '/':
         args.url += '/'
 
