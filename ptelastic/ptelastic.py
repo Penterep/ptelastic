@@ -235,6 +235,8 @@ def get_help():
             ["-v",  "--version",                "",                 "Show script version and exit"],
             ["-h",  "--help",                   "",                 "Show this help message and exit"],
             ["-j",  "--json",                   "",                 "Output in JSON format"],
+            ["-U", "--user",                    "",                 "Set user to authenticate as"],
+            ["-P", "--password",                "",                 "Set password to authenticate with"]
         ]
         }]
 
@@ -253,9 +255,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("-j",  "--json",           action="store_true")
     parser.add_argument("-v",  "--version",        action='version', version=f'{SCRIPTNAME} {__version__}')
 
-    parser.add_argument("--socket-address",          type=str, default=None)
-    parser.add_argument("--socket-port",             type=str, default=None)
-    parser.add_argument("--process-ident",           type=str, default=None)
+    parser.add_argument("--socket-address",        type=str, default=None)
+    parser.add_argument("--socket-port",           type=str, default=None)
+    parser.add_argument("--process-ident",         type=str, default=None)
+    parser.add_argument("-U", "--user",            type=str, default=None)
+    parser.add_argument("-P", "--password",        type=str, default=None)
 
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
         ptprint(help_print(get_help(), SCRIPTNAME, __version__))
@@ -266,6 +270,10 @@ def parse_args() -> argparse.Namespace:
     args.proxy = {"http": args.proxy, "https": args.proxy}
     if args.url[-1] != '/':
         args.url += '/'
+
+    if args.user and args.password:
+        proto = args.url.find("//")+2
+        args.url = f"{args.url[:proto]}{args.user}:{args.password}@{args.url[proto:]}"
 
     print_banner(SCRIPTNAME, __version__, args.json, 0)
     return args
