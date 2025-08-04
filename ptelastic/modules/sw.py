@@ -47,7 +47,7 @@ class SwTest:
 
         if response.status_code != HTTPStatus.OK:
             ptprint(f"Could not enumerate ES version. Received reponse code: {response.status_code}",
-                    "ERROR", not self.args.json, indent=4)
+                    "OK", not self.args.json, indent=4)
             return False
 
         response = response.json()
@@ -60,9 +60,9 @@ class SwTest:
             ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
             return False
 
-        ptprint(f"Elasticsearch version: {es_properties['es_version']}", "INFO", not self.args.json, indent=4)
-        ptprint(f"Cluster name: {es_properties['cluster_name']}", "INFO", not self.args.json, indent=4)
-        ptprint(f"Apache Lucene Version: {es_properties['apache_lucene_version']}","INFO", not self.args.json, indent=4)
+        ptprint(f"Elasticsearch version: {es_properties['es_version']}", "VULN", not self.args.json, indent=4)
+        ptprint(f"Cluster name: {es_properties['cluster_name']}", "VULN", not self.args.json, indent=4)
+        ptprint(f"Apache Lucene Version: {es_properties['apache_lucene_version']}","VULN", not self.args.json, indent=4)
         node = self.ptjsonlib.create_node_object("sw", properties=es_properties)
         self.ptjsonlib.add_node(node)
 
@@ -82,7 +82,7 @@ class SwTest:
         response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != HTTPStatus.OK:
-            ptprint(f"Could not enumerate modules. Received reponse code: {response.status_code}", "ERROR",
+            ptprint(f"Could not enumerate modules. Received reponse code: {response.status_code}", "OK",
                     not self.args.json, indent=4)
             return False
 
@@ -100,7 +100,7 @@ class SwTest:
                 json_node = self.ptjsonlib.create_node_object("sw", properties=module_properties)
                 self.ptjsonlib.add_node(json_node)
                 ptprint(f"Found module: {module_properties['name']} {module_properties['version']}",
-                        "INFO", not self.args.json, indent=4)
+                        "VULN", not self.args.json, indent=4)
 
         return True
 
@@ -119,7 +119,7 @@ class SwTest:
         response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != HTTPStatus.OK:
-            ptprint(f"Could not enumerate plugins. Received reponse code: {response.status_code}", "ERROR",
+            ptprint(f"Could not enumerate plugins. Received reponse code: {response.status_code}", "OK",
                     not self.args.json, indent=4)
             return False
 
@@ -136,7 +136,7 @@ class SwTest:
             json_node = self.ptjsonlib.create_node_object("sw", properties=plugin_properties)
             self.ptjsonlib.add_node(json_node)
             ptprint(f"Found plugin: {plugin_properties['name']} {plugin_properties['version']} "
-                    f"on node: {plugin_properties['es_node']}", "INFO", not self.args.json, indent=4)
+                    f"on node: {plugin_properties['es_node']}", "VULN", not self.args.json, indent=4)
 
         return True
 

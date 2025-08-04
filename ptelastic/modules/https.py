@@ -46,7 +46,7 @@ class HttpTest:
             ptprint(f"The host is running HTTP", "VULN", not self.args.json, indent=4)
             self.ptjsonlib.add_vulnerability("PTV-ELASTIC-MISC-HTTP")
         else:
-            ptprint(f"The host is not running on HTTP", "INFO", not self.args.json, indent=4)
+            ptprint(f"The host is not running on HTTP", "OK", not self.args.json, indent=4)
 
 
     def _check_url(self) -> str:
@@ -85,7 +85,7 @@ class HttpTest:
             self._check_http(url)
             return
 
-        ptprint(f"The host is not running on HTTP", "INFO", not self.args.json, indent=4)
+        ptprint(f"The host is not running on HTTP", "OK", not self.args.json, indent=4)
 
 
 def run(args, ptjsonlib, helpers, http_client, base_response):
