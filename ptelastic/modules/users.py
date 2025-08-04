@@ -55,7 +55,7 @@ class Users:
 
             ptprint(f"Privileges on indices: {index_name}: {', '.join(privileges).upper()}; Can edit restricted indices: "
                     f"{index["allow_restricted_indices"]}",
-                    "INFO", not self.args.json, indent=12)
+                    "VULN", not self.args.json, indent=12)
 
         for app in applications:
             privileges = "ALL" if app["privileges"][0] == '*' else app["privileges"]
@@ -65,7 +65,7 @@ class Users:
             user_properties["roles"][role].append({app_name: privileges})
 
             ptprint(f"Privileges on application: {app_name}: {privileges_name}",
-                    "INFO", not self.args.json, indent=12)
+                    "VULN", not self.args.json, indent=12)
 
     def _print_user(self, user_properties: dict, check_roles: bool, role_privileges: dict) -> None:
         """
@@ -74,20 +74,20 @@ class Users:
         If we're able to list roles from the /_security/role endpoint, we enumerate privileges assigned to the roles of a user
         with the _check_privileges method
         """
-        ptprint(f"Found user: {user_properties['username']}", "INFO", not self.args.json, indent=4)
-        ptprint(f"Email: {user_properties['email']}", "INFO", not self.args.json, indent=8)
+        ptprint(f"Found user: {user_properties['username']}", "VULN", not self.args.json, indent=4)
+        ptprint(f"Email: {user_properties['email']}", "VULN", not self.args.json, indent=8)
 
         roles = set(user_properties["roles"])
 
         for role in roles:
             if role == "superuser":
-                ptprint(f"\033[0mRole: \033[31m{role}", "INFO", not self.args.json, indent=8, colortext=True)
+                ptprint(f"\033[0mRole: \033[31m{role}", "VULN", not self.args.json, indent=8, colortext=True)
             else:
-                ptprint(f"Role: {role}", "INFO", not self.args.json, indent=8)
+                ptprint(f"Role: {role}", "VULN", not self.args.json, indent=8)
             if check_roles:
                 self._check_privileges(role, role_privileges, user_properties)
             else:
-                ptprint(f"Could not enumerate privileges","ERROR", not self.args.json, indent=4)
+                ptprint(f"Could not enumerate privileges","OK", not self.args.json, indent=4)
 
 
 
@@ -106,7 +106,7 @@ class Users:
 
         if response.status_code != HTTPStatus.OK:
             ptprint(f"Could not enumerate users. Received status code: {response.status_code}",
-                    "ERROR", not self.args.json, indent=4)
+                    "OK", not self.args.json, indent=4)
             return
 
         users = response.json()
