@@ -50,12 +50,7 @@ class IsElastic:
         "X-elastic-product: Elasticsearch" header in the case of a 200 OK response
         """
 
-        url = self.args.url
-        response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
-
-        if self.args.verbose:
-            ptprint(f"Sending request to: {url}", "INFO", not self.args.json, colortext=False, indent=4)
-            ptprint(f"Returned response status: {response.status_code}", "INFO", not self.args.json, indent=4)
+        response = self.base_response
 
         try:
             if "application/json" not in response.headers["content-type"]:
@@ -84,6 +79,9 @@ class IsElastic:
             except KeyError:
                 if self._check_text(response):
                     ptprint(f"The host is running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
+                if "application/json" in response.headers["Content-Type"]:
+                    ptprint(f"The host might be running ElasticSearch", "INFO", not self.args.json, colortext=False,
+                            indent=4)
 
         else:
             ptprint(f"The host is not running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)

@@ -85,12 +85,7 @@ class Auth:
         If authentication is disabled, a vulnerability and a property are added to the JSON result
         """
 
-        url = self.args.url
-        response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
-
-        if self.args.verbose:
-            ptprint(f"Sending request to: {url}", "INFO", not self.args.json, colortext=False, indent=4)
-            ptprint(f"Returned response status: {response.status_code}", "INFO", not self.args.json, indent=4)
+        response = self.base_response
 
         if response.status_code == http.HTTPStatus.UNAUTHORIZED:
             ptprint(f"Authentication is enabled", "OK", not self.args.json, indent=4)

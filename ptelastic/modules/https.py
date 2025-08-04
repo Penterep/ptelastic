@@ -6,6 +6,7 @@ This module tests if an Elasticsearch instance is running on HTTPS or HTTP
 
 import http
 from http import HTTPStatus
+from http.client import responses
 
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
@@ -40,7 +41,10 @@ class HttpTest:
         :param url: Host to test
         :return:
         """
-        response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
+        if url == self.args.url:
+            response = self.base_response
+        else:
+            response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
 
         if response.status_code in [HTTPStatus.OK, HTTPStatus.UNAUTHORIZED]:
             ptprint(f"The host is running HTTP", "VULN", not self.args.json, indent=4)

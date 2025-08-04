@@ -42,8 +42,7 @@ class SwTest:
         :return: False if we get an HTTP response other than 200 OK, or we don't find the version in the response.
                  True If we get an HTTP 200 OK response and we find the version
         """
-        response = self.http_client.send_request(self.args.url, method="GET", headers=self.args.headers,
-                                                 allow_redirects=False)
+        response = self.base_response
 
         if response.status_code != HTTPStatus.OK:
             ptprint(f"Could not enumerate ES version. Received reponse code: {response.status_code}",
