@@ -79,7 +79,7 @@ class IsElastic:
             except KeyError:
                 if self._check_text(response):
                     ptprint(f"The host is running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
-                if "application/json" in response.headers["Content-Type"]:
+                elif "application/json" in response.headers["Content-Type"]:
                     ptprint(f"The host might be running ElasticSearch", "INFO", not self.args.json, colortext=False,
                             indent=4)
 
