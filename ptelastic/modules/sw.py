@@ -32,6 +32,35 @@ class SwTest:
         self.helpers.print_header(__TESTLABEL__)
 
 
+    def _get_properties(self, response: object) -> object:
+        es_properties = {}
+
+        try:
+            es_properties["es_version"] = response["version"]["number"]
+        except KeyError as e:
+            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
+            es_properties["es_version"] = None
+
+        try:
+            es_properties["name"] = response["name"]
+        except KeyError as e:
+            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
+            es_properties["name"] = None
+
+        try:
+            es_properties["cluster_name"] = response["cluster_name"]
+        except KeyError as e:
+            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
+            es_properties["cluster_name"] = None
+
+        try:
+            es_properties["apache_lucene_version"] = response["version"]["lucene_version"]
+        except KeyError as e:
+            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
+            es_properties["apache_lucene_version"] = None
+
+        return es_properties
+
     def _get_es_version(self) -> bool:
         """
         This method finds the Elasticsearch version by sending a GET request to http://<host>/ and looking at
@@ -50,14 +79,7 @@ class SwTest:
             return False
 
         response = response.json()
-        try:
-            es_properties = {"es_version": response["version"]["number"],
-                             "name": response["name"],
-                             "cluster_name": response["cluster_name"],
-                             "apache_lucene_version": response["version"]["lucene_version"]}
-        except KeyError as e:
-            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
-            return False
+        es_properties = self._get_properties(response)
 
         ptprint(f"Elasticsearch version: {es_properties['es_version']}", "VULN", not self.args.json, indent=4)
         ptprint(f"Cluster name: {es_properties['cluster_name']}", "VULN", not self.args.json, indent=4)
