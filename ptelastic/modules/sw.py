@@ -62,7 +62,7 @@ class SwTest:
         ptprint(f"Elasticsearch version: {es_properties['es_version']}", "VULN", not self.args.json, indent=4)
         ptprint(f"Cluster name: {es_properties['cluster_name']}", "VULN", not self.args.json, indent=4)
         ptprint(f"Apache Lucene Version: {es_properties['apache_lucene_version']}","VULN", not self.args.json, indent=4)
-        node = self.ptjsonlib.create_node_object("sw", properties=es_properties)
+        node = self.ptjsonlib.create_node_object("sw-es", properties=es_properties)
         self.ptjsonlib.add_node(node)
 
         return True
@@ -96,7 +96,7 @@ class SwTest:
                     "version": module["version"],
                     "description": module["description"]
                 }
-                json_node = self.ptjsonlib.create_node_object("sw", properties=module_properties)
+                json_node = self.ptjsonlib.create_node_object("sw-module", properties=module_properties)
                 self.ptjsonlib.add_node(json_node)
                 ptprint(f"Found module: {module_properties['name']} {module_properties['version']}",
                         "VULN", not self.args.json, indent=4)
@@ -132,7 +132,7 @@ class SwTest:
                 "name": plugin[1],
                 "version": plugin[2]
             }
-            json_node = self.ptjsonlib.create_node_object("sw", properties=plugin_properties)
+            json_node = self.ptjsonlib.create_node_object("sw-plugin", properties=plugin_properties)
             self.ptjsonlib.add_node(json_node)
             ptprint(f"Found plugin: {plugin_properties['name']} {plugin_properties['version']} "
                     f"on node: {plugin_properties['es_node']}", "VULN", not self.args.json, indent=4)
