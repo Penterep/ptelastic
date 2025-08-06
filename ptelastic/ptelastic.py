@@ -236,7 +236,8 @@ def get_help():
             ["-h",  "--help",                   "",                 "Show this help message and exit"],
             ["-j",  "--json",                   "",                 "Output in JSON format"],
             ["-U", "--user",                    "",                 "Set user to authenticate as"],
-            ["-P", "--password",                "",                 "Set password to authenticate with"]
+            ["-P", "--password",                "",                 "Set password to authenticate with"],
+            ["-F", "--file",                    "</path/to/file>",  "File to read if host is vulnerable to CVE-2015-5531 (default /etc/passwd)"]
         ]
         }]
 
@@ -260,7 +261,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--process-ident",         type=str, default=None)
     parser.add_argument("-U", "--user",            type=str, default=None)
     parser.add_argument("-P", "--password",        type=str, default=None)
-
+    parser.add_argument("-F", "--file",             type=str, default="/etc/passwd")
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
         ptprint(help_print(get_help(), SCRIPTNAME, __version__))
         sys.exit(0)
