@@ -4,7 +4,7 @@ Elasticsearch availability test
 This module implements a test that checks if the provided host is running Elasticsearch or not
 
 Contains:
-- IsElastic
+- IsElastic to perform the availability test
 - run() function as an entry point for running the test
 """
 
