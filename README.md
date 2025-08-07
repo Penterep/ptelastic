@@ -17,6 +17,7 @@ The tool:
    - CVE-2015-5531
    - CVE-2015-1427
    - CVE-2014-3120
+   - CVE-2015-3337
 
 ## Installation
 
