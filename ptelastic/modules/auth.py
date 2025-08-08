@@ -62,7 +62,7 @@ class Auth:
         security = self.http_client.send_request(url , method="GET", headers=self.args.headers, allow_redirects=False)
 
         if security.status_code != http.HTTPStatus.OK:
-            ptprint(f"Error when probing authentication at {url}. Recieved response: {security.status_code}", "ERROR", not self.args.json, indent=4)
+            ptprint(f"Error when probing authentication at {url}. Received response: {security.status_code}", "ERROR", not self.args.json, indent=4)
             return
 
         security = security.json()
