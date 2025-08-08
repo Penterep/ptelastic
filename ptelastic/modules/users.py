@@ -4,7 +4,7 @@ Elasticsearch user enumeration
 This module enumerates what users are available on an Elasticsearch instance
 
 Contains:
-- Users
+- Users class to perform the user enumeration
 - run() function as an entry point for running the test
 """
 

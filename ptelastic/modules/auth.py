@@ -45,10 +45,13 @@ class Auth:
 
         for user in users.keys():
             if "anon" in user or "anonymous" in user:
+                ptprint(f"Authentication is enabled, but anonymous access is allowed", "VULN", not self.args.json,
+                        indent=4)
                 ptprint(f"Anonymous role: {', '.join(users[user]['roles'])}", "VULN", not self.args.json, indent=7)
                 return
 
-        ptprint(f"Could not find username which would match 'anonymous' or 'anon' All users: {','.join(users.keys())}",
+        ptprint(f"Authentication is enabled. Anonymous access is not available", "OK", not self.args.json, indent=4)
+        ptprint(f"Could not find username which would match 'anonymous' or 'anon'. All users: {','.join(users.keys())}",
                 "OK", not self.args.json, indent=4)
 
     def _test_anon_auth(self) -> None:
@@ -59,7 +62,8 @@ class Auth:
         security = self.http_client.send_request(url , method="GET", headers=self.args.headers, allow_redirects=False)
 
         if security.status_code != http.HTTPStatus.OK:
-            self.ptjsonlib.end_error(f"Webpage returns status code: {security.status_code}", self.args.json)
+            ptprint(f"Error when probing authentication at {url}. Received response: {security.status_code}", "ERROR", not self.args.json, indent=4)
+            return
 
         security = security.json()
 
@@ -69,7 +73,6 @@ class Auth:
             self.ptjsonlib.add_properties({"authentication": "disabled"})
             return
 
-        ptprint(f"Authentication is enabled, but anonymous access is allowed","VULN", not self.args.json, indent=4)
         self._print_anon_role()
 
     def run(self) -> None:
@@ -84,7 +87,6 @@ class Auth:
 
         If authentication is disabled, a vulnerability and a property are added to the JSON result
         """
-
         response = self.base_response
 
         if response.status_code == http.HTTPStatus.UNAUTHORIZED:

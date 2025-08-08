@@ -12,6 +12,12 @@ The tool:
    - Elasticsearch version
    - Modules, their version and description
    - Installed plugins and their version
+   - Users, their roles and privileges
+- Tests for the following CVEs:
+   - CVE-2015-5531
+   - CVE-2015-1427
+   - CVE-2014-3120
+   - CVE-2015-3337
 
 ## Installation
 
@@ -84,3 +90,4 @@ you have been given permission to pentest. We do not accept any
 responsibility for any damage/harm that this application causes to your
 computer, or your network. Penterep is not responsible for any illegal
 or malicious use of this code. Be Ethical!
+
