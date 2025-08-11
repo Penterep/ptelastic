@@ -39,6 +39,9 @@ from helpers._thread_local_stdout import ThreadLocalStdout
 from helpers.helpers import Helpers
 from _version import __version__
 
+
+from modules._is_elastic import IsElastic
+
 class PtElastic:
     def __init__(self, args):
         self.ptjsonlib   = ptjsonlib.PtJsonLib()
@@ -55,6 +58,7 @@ class PtElastic:
     def run(self) -> None:
         """Main method"""
         self._fetch_initial_response()
+        self._check_if_target_runs_elastic()
 
         tests = self.args.tests or _get_all_available_modules()
         self.ptthreads.threads(tests, self.run_single_module, self.args.threads)
@@ -70,6 +74,28 @@ class PtElastic:
         """
         return "https://" in self.base_response.headers.get('Location', 'unknown')
 
+    def _check_if_target_runs_elastic(self) -> None:
+        """
+        Executes the IS_ELASTIC pre-check to determine if the target is running Elasticsearch.
+
+        This method:
+        - Instantiates the `_IS_ELASTIC` module
+        - Calls its `run()` method
+        - If the module determines that Elasticsearch is NOT running,
+        it calls `ptjsonlib.end_error()` internally and terminates the program.
+
+        Notes:
+            The `_IS_ELASTIC` module is responsible for handling the error state
+            and ending execution if the target does not appear to run Elasticsearch.
+        """
+        IsElastic(
+            args=self.args,
+            ptjsonlib=self.ptjsonlib,
+            helpers=self.helpers,
+            http_client=self.http_client,
+            base_response=self.base_response
+        ).run()
+        ptprint(" ", "TEXT", not self.args.json)
 
     def _fetch_initial_response(self) -> None:
         """

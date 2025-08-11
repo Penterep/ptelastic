@@ -44,7 +44,7 @@ class IsElastic:
 
         Sends an HTTP GET request to the provided URL and checks to see if we get JSON content as a response.
 
-        JSON content not in response - Return
+        JSON content not in response - calls ptjsonlib.end_error() to stop execution of all further modules.
 
         JSON content in response - Check if content contains a security exception in the case of a 401 Unauthorized response or
         "X-elastic-product: Elasticsearch" header in the case of a 200 OK response
@@ -54,11 +54,13 @@ class IsElastic:
 
         try:
             if "application/json" not in response.headers["content-type"]:
-                ptprint(f"The host is not running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
-                return
+                #ptprint(f"The host is not running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
+                #return
+                self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
         except KeyError:
-            ptprint(f"The host is not running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
-            return
+            #ptprint(f"The host is not running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
+            #return
+            self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
 
         if response.status_code == HTTPStatus.UNAUTHORIZED:
             response_json = response.json()
@@ -69,8 +71,7 @@ class IsElastic:
                 elif response_json["error"]["root_cause"][0]["type"] == "security_exception":
                     ptprint(f"The host might be running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
             except KeyError:
-                ptprint(f"The host is probably not running ElasticSearch", "INFO", not self.args.json, colortext=False,
-                        indent=4)
+                ptprint(f"The host is probably not running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
 
         elif response.status_code == HTTPStatus.OK:
             try:
@@ -80,11 +81,10 @@ class IsElastic:
                 if self._check_text(response):
                     ptprint(f"The host is running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
                 elif "application/json" in response.headers["Content-Type"]:
-                    ptprint(f"The host might be running ElasticSearch", "INFO", not self.args.json, colortext=False,
-                            indent=4)
-
+                    ptprint(f"The host might be running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
         else:
-            ptprint(f"The host is not running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
+            self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
+            #ptprint(f"The host is not running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
 
 
 
