@@ -32,6 +32,35 @@ class SwTest:
         self.helpers.print_header(__TESTLABEL__)
 
 
+    def _get_properties(self, response: dict) -> object:
+        es_properties = {}
+
+        try:
+            es_properties["esVersion"] = response["version"]["number"]
+        except KeyError as e:
+            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
+            es_properties["esVersion"] = None
+
+        try:
+            es_properties["name"] = response["name"]
+        except KeyError as e:
+            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
+            es_properties["name"] = None
+
+        try:
+            es_properties["clusterName"] = response["cluster_name"]
+        except KeyError as e:
+            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
+            es_properties["clusterName"] = None
+
+        try:
+            es_properties["apacheLuceneVersion"] = response["version"]["lucene_version"]
+        except KeyError as e:
+            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
+            es_properties["apacheLuceneVersion"] = None
+
+        return es_properties
+
     def _get_es_version(self) -> bool:
         """
         This method finds the Elasticsearch version by sending a GET request to http://<host>/ and looking at
@@ -45,24 +74,17 @@ class SwTest:
         response = self.base_response
 
         if response.status_code != HTTPStatus.OK:
-            ptprint(f"Could not enumerate ES version. Received reponse code: {response.status_code}",
+            ptprint(f"Could not enumerate ES version. Received response code: {response.status_code}",
                     "OK", not self.args.json, indent=4)
             return False
 
         response = response.json()
-        try:
-            es_properties = {"es_version": response["version"]["number"],
-                             "name": response["name"],
-                             "cluster_name": response["cluster_name"],
-                             "apache_lucene_version": response["version"]["lucene_version"]}
-        except KeyError as e:
-            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
-            return False
+        es_properties = self._get_properties(response)
 
-        ptprint(f"Elasticsearch version: {es_properties['es_version']}", "VULN", not self.args.json, indent=4)
-        ptprint(f"Cluster name: {es_properties['cluster_name']}", "VULN", not self.args.json, indent=4)
-        ptprint(f"Apache Lucene Version: {es_properties['apache_lucene_version']}","VULN", not self.args.json, indent=4)
-        node = self.ptjsonlib.create_node_object("sw", properties=es_properties)
+        ptprint(f"Elasticsearch version: {es_properties['esVersion']}", "VULN", not self.args.json, indent=4)
+        ptprint(f"Cluster name: {es_properties['clusterName']}", "VULN", not self.args.json, indent=4)
+        ptprint(f"Apache Lucene Version: {es_properties['apacheLuceneVersion']}","VULN", not self.args.json, indent=4)
+        node = self.ptjsonlib.create_node_object("swES", properties=es_properties)
         self.ptjsonlib.add_node(node)
 
         return True
@@ -75,13 +97,13 @@ class SwTest:
 
         If successful, it adds the module name, version and description into the JSON output
 
-        :return: False if we get an HTTP reponse other than 200 OK. True if we get an HTTP 200 OK and we find modules
+        :return: False if we get an HTTP response other than 200 OK. True if we get an HTTP 200 OK and we find modules
         """
         url = self.args.url + "_nodes"
         response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != HTTPStatus.OK:
-            ptprint(f"Could not enumerate modules. Received reponse code: {response.status_code}", "OK",
+            ptprint(f"Could not enumerate modules. Received response code: {response.status_code}", "OK",
                     not self.args.json, indent=4)
             return False
 
@@ -96,7 +118,7 @@ class SwTest:
                     "version": module["version"],
                     "description": module["description"]
                 }
-                json_node = self.ptjsonlib.create_node_object("sw", properties=module_properties)
+                json_node = self.ptjsonlib.create_node_object("swModule", properties=module_properties)
                 self.ptjsonlib.add_node(json_node)
                 ptprint(f"Found module: {module_properties['name']} {module_properties['version']}",
                         "VULN", not self.args.json, indent=4)
@@ -111,14 +133,14 @@ class SwTest:
 
         If successful, it adds the plugin node, name and version into the JSON output
 
-        :return: False if we get an HTTP reponse other than 200 OK. True if we get an HTTP 200 OK
+        :return: False if we get an HTTP response other than 200 OK. True if we get an HTTP 200 OK
         """
         url = self.args.url + "_cat/plugins"
 
         response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != HTTPStatus.OK:
-            ptprint(f"Could not enumerate plugins. Received reponse code: {response.status_code}", "OK",
+            ptprint(f"Could not enumerate plugins. Received response code: {response.status_code}", "OK",
                     not self.args.json, indent=4)
             return False
 
@@ -128,14 +150,14 @@ class SwTest:
         for plugin in plugins:
             plugin = list(filter(None, plugin)) # remove empty string from plugin
             plugin_properties = {
-                "es_node": plugin[0],
+                "esNode": plugin[0],
                 "name": plugin[1],
                 "version": plugin[2]
             }
-            json_node = self.ptjsonlib.create_node_object("sw", properties=plugin_properties)
+            json_node = self.ptjsonlib.create_node_object("swPlugin", properties=plugin_properties)
             self.ptjsonlib.add_node(json_node)
             ptprint(f"Found plugin: {plugin_properties['name']} {plugin_properties['version']} "
-                    f"on node: {plugin_properties['es_node']}", "VULN", not self.args.json, indent=4)
+                    f"on node: {plugin_properties['esNode']}", "VULN", not self.args.json, indent=4)
 
         return True
 
