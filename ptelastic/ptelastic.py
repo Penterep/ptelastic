@@ -263,7 +263,9 @@ def get_help():
             ["-j",  "--json",                   "",                 "Output in JSON format"],
             ["-U", "--user",                    "",                 "Set user to authenticate as"],
             ["-P", "--password",                "",                 "Set password to authenticate with"],
-            ["-F", "--file",                    "</path/to/file>",  "File to read if host is vulnerable to CVE-2015-5531 (default /etc/passwd)"]
+            ["-F", "--file",                    "</path/to/file>",  "File to read if host is vulnerable to CVE-2015-5531 (default /etc/passwd)"],
+            ["-di", "--dump-index"              "<index1, index2, ...>",      "Specify index to dump with data_dump module"],
+            ["-di", "--dump-field",            "<field1,field2, field3.subfield>",     "Specify fields to dump with data_dump module"]
         ]
         }]
 
@@ -287,7 +289,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--process-ident",         type=str, default=None)
     parser.add_argument("-U", "--user",            type=str, default=None)
     parser.add_argument("-P", "--password",        type=str, default=None)
-    parser.add_argument("-F", "--file",             type=str, default="/etc/passwd")
+    parser.add_argument("-F", "--file",            type=str, default="/etc/passwd")
+    parser.add_argument("-di", "--dump-index",     type=lambda f: f.split(","), default="")
+    parser.add_argument("-df", "--dump-field",    type=lambda f: f.split(","), default=None)
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
         ptprint(help_print(get_help(), SCRIPTNAME, __version__))
         sys.exit(0)
