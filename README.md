@@ -18,6 +18,9 @@ The tool:
    - CVE-2015-1427
    - CVE-2014-3120
    - CVE-2015-3337
+- Dumps:
+   - Structure of indices
+   - Data from indices
 
 ## Installation
 
@@ -90,4 +93,5 @@ you have been given permission to pentest. We do not accept any
 responsibility for any damage/harm that this application causes to your
 computer, or your network. Penterep is not responsible for any illegal
 or malicious use of this code. Be Ethical!
+
 
