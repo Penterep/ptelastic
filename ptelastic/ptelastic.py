@@ -21,7 +21,7 @@ import importlib
 import os
 import threading
 import sys;
-
+from time import strftime
 import requests
 
 sys.path.append(__file__.rsplit("/", 1)[0])
@@ -265,7 +265,8 @@ def get_help():
             ["-P", "--password",                "",                 "Set password to authenticate with"],
             ["-F", "--file",                    "</path/to/file>",  "File to read if host is vulnerable to CVE-2015-5531 (default /etc/passwd)"],
             ["-di", "--dump-index"              "<index1, index2, ...>",      "Specify index to dump with data_dump module"],
-            ["-di", "--dump-field",            "<field1,field2, field3.subfield>",     "Specify fields to dump with data_dump module"]
+            ["-df", "--dump-field",             "<field1,field2, field3.subfield>",     "Specify fields to dump with data_dump module"],
+            ["-o", "--out-file",                "<filename>",       "Specify the name of the file to store structure/data dump to"]
         ]
         }]
 
@@ -291,7 +292,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("-P", "--password",        type=str, default=None)
     parser.add_argument("-F", "--file",            type=str, default="/etc/passwd")
     parser.add_argument("-di", "--dump-index",     type=lambda f: f.split(","), default="")
-    parser.add_argument("-df", "--dump-field",    type=lambda f: f.split(","), default=None)
+    parser.add_argument("-df", "--dump-field",     type=lambda f: f.split(","), default=None)
+    parser.add_argument("-o", "--out-file",        type=lambda o: f"{o}.json", default=None)
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
         ptprint(help_print(get_help(), SCRIPTNAME, __version__))
         sys.exit(0)
