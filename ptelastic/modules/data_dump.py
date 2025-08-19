@@ -98,11 +98,11 @@ class DataDump:
 
                 for entry in data:
                     isolated_data = self._get_field(entry)
-                    ptprint(isolated_data, "INFO", not self.args.json, indent=4) if isolated_data else None
+                    ptprint(isolated_data, "VULN", not self.args.json, indent=4) if isolated_data else None
                     full_data.append(isolated_data) if isolated_data else None
 
             else:
-                ptprint(data, "INFO", not self.args.json, indent=4)
+                ptprint(data, "VULN", not self.args.json, indent=4)
                 full_data.append(data) if data else None
 
         if self.args.out_file and full_data:

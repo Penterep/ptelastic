@@ -104,8 +104,8 @@ class StrucDump:
                 ptprint(f"Index {index} has no mappings with {e} field", "ERROR", not self.args.json, indent=4)
                 continue
 
-            ptprint(f"Index {index}", "INFO", not self.args.json, indent=4)
-            ptprint(', '.join(fields), "INFO", not self.args.json, indent=8)
+            ptprint(f"Index {index}", "VULN", not self.args.json, indent=4)
+            ptprint(', '.join(fields), "VULN", not self.args.json, indent=8)
 
 def run(args, ptjsonlib, helpers, http_client, base_response):
     """Entry point for running the StrucDump test"""
