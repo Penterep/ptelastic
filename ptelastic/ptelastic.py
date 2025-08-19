@@ -20,8 +20,7 @@ import argparse
 import importlib
 import os
 import threading
-import sys;
-from time import strftime
+import sys
 import requests
 
 sys.path.append(__file__.rsplit("/", 1)[0])
@@ -299,7 +298,6 @@ def parse_args() -> argparse.Namespace:
         sys.exit(0)
 
     args = parser.parse_args()
-    #args.url = urlunparse(urlparse(args.url)._replace(path='', params='', query='', fragment=''))
     args.proxy = {"http": args.proxy, "https": args.proxy}
     if args.url[-1] != '/':
         args.url += '/'
