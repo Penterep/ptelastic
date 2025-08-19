@@ -8,7 +8,6 @@ Contains:
 
 import http
 from http.client import responses
-from http.cookiejar import cut_port_re
 from mimetypes import inited
 import json
 from typing import Literal

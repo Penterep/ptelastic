@@ -22,7 +22,7 @@ __TESTLABEL__ = "Elasticsearch data structure test"
 
 class StrucDump:
     """
-    This class gets all indexes from an ES instance and then dumps what fields each index contains
+    This class gets all indices from an ES instance and then dumps what fields each index contains
     """
     def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object) -> None:
         self.args = args
@@ -36,9 +36,9 @@ class StrucDump:
 
     def _get_indices(self) -> list:
         """
-        This method retrieves all available indexes at an ES instance
+        This method retrieves all available indices at an ES instance
 
-        :return: List of indexes if successful. Empty list otherwise
+        :return: List of indices if successful. Empty list otherwise
         """
         response = self.http_client.send_request(method="GET", url=self.args.url+"_cat/indices?pretty", headers=self.args.headers)
 

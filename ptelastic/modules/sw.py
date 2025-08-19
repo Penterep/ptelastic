@@ -11,7 +11,6 @@ Contains:
 
 import http
 from http import HTTPStatus
-
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
 
