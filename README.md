@@ -18,6 +18,7 @@ The tool:
    - CVE-2015-1427
    - CVE-2014-3120
    - CVE-2015-3337
+   - any other CVE the host might be vulnerable to
 - Dumps:
    - Structure of indices
    - Data from indices
@@ -67,6 +68,12 @@ ptelastic -u htttps://www.example.com/
    -v   --version                     Show script version and exit
    -h   --help                        Show this help message and exit
    -j   --json                        Output in JSON format
+   -U   --user        <username>      Set user to authenticate as
+   -P   --password    <password>      Set password to authenticate with
+   -F   --file        </path/to/file> File to read if host is vulnerable to CVE-2015-5531 (default /etc/passwd)
+   -di  --dump-index  <index1, ...>   Specify index to dump with data_dump module
+   -df  --dump-field  <field>         Specify fields to dump with data_dump module
+   -o   --out-file    <filename>      Specify the name of the file to store structure/data dump to
 
 
 ```
@@ -93,5 +100,6 @@ you have been given permission to pentest. We do not accept any
 responsibility for any damage/harm that this application causes to your
 computer, or your network. Penterep is not responsible for any illegal
 or malicious use of this code. Be Ethical!
+
 
 
