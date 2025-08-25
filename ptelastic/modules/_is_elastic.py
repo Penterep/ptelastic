@@ -8,11 +8,9 @@ Contains:
 - run() function as an entry point for running the test
 """
 
-import http
 from requests import Response
 from http import HTTPStatus
 from xml.etree.ElementPath import prepare_parent
-
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
 
@@ -34,7 +32,10 @@ class IsElastic:
         self.helpers.print_header(__TESTLABEL__)
 
 
-    def _check_text(self, response: Response) -> bool:
+    def _contains_es_text(self, response: Response) -> bool:
+        """
+        :return: True if the response body contains the word 'elasticsearch'.
+        """
         return "elasticsearch" in response.text.lower()
 
 
@@ -52,21 +53,14 @@ class IsElastic:
 
         response = self.base_response
 
-        try:
-            if "application/json" not in response.headers["content-type"]:
-                #ptprint(f"The host is not running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
-                #return
-                self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
-        except KeyError:
-            #ptprint(f"The host is not running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
-            #return
+        if "application/json" not in response.headers.get("content-type", ""):
             self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
 
         if response.status_code == HTTPStatus.UNAUTHORIZED:
             response_json = response.json()
 
             try:
-                if self._check_text(response):
+                if self._contains_es_text(response):
                     ptprint(f"The host is running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
                 elif response_json["error"]["root_cause"][0]["type"] == "security_exception":
                     ptprint(f"The host might be running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
@@ -78,14 +72,12 @@ class IsElastic:
                 if response.headers["X-elastic-product"] == "Elasticsearch":
                     ptprint(f"The host is running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
             except KeyError:
-                if self._check_text(response):
+                if self._contains_es_text(response):
                     ptprint(f"The host is running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
                 elif "application/json" in response.headers["Content-Type"]:
                     ptprint(f"The host might be running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
         else:
             self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
-            #ptprint(f"The host is not running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
-
 
 
 def run(args, ptjsonlib, helpers, http_client, base_response):

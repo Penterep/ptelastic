@@ -7,7 +7,6 @@ This module tests if an Elasticsearch instance is running on HTTPS or HTTP
 import http
 from http import HTTPStatus
 from http.client import responses
-
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
 
@@ -47,7 +46,7 @@ class HttpTest:
             response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
 
         if response.status_code in [HTTPStatus.OK, HTTPStatus.UNAUTHORIZED]:
-            ptprint(f"The host is running HTTP", "VULN", not self.args.json, indent=4)
+            ptprint(f"The host is running on HTTP", "VULN", not self.args.json, indent=4)
             self.ptjsonlib.add_vulnerability("PTV-ELASTIC-MISC-HTTP")
         else:
             ptprint(f"The host is not running on HTTP", "OK", not self.args.json, indent=4)
@@ -78,9 +77,9 @@ class HttpTest:
         """
         Executes the Elasticsearch HTTP/S test
 
-        Edits the URL if necessary and checks if the host is really running HTTP or not
+        Edits the URL if necessary and checks if the host is really running on HTTP or not
 
-        If we're provided with an HTTPS URL, we just print a message that says the host is running HTTPS
+        If we're provided with an HTTPS URL, we just print a message that says the host is running on HTTPS
         """
 
         url = self._check_url()

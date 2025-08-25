@@ -11,7 +11,6 @@ Contains:
 
 import http
 from http import HTTPStatus
-
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
 
@@ -32,35 +31,6 @@ class SwTest:
         self.helpers.print_header(__TESTLABEL__)
 
 
-    def _get_properties(self, response: dict) -> object:
-        es_properties = {}
-
-        try:
-            es_properties["esVersion"] = response["version"]["number"]
-        except KeyError as e:
-            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
-            es_properties["esVersion"] = None
-
-        try:
-            es_properties["name"] = response["name"]
-        except KeyError as e:
-            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
-            es_properties["name"] = None
-
-        try:
-            es_properties["clusterName"] = response["cluster_name"]
-        except KeyError as e:
-            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
-            es_properties["clusterName"] = None
-
-        try:
-            es_properties["apacheLuceneVersion"] = response["version"]["lucene_version"]
-        except KeyError as e:
-            ptprint(f"Error when reading JSON response. Cannot find key: {e}", "ERROR", not self.args.json, indent=4)
-            es_properties["apacheLuceneVersion"] = None
-
-        return es_properties
-
     def _get_es_version(self) -> bool:
         """
         This method finds the Elasticsearch version by sending a GET request to http://<host>/ and looking at
@@ -79,7 +49,11 @@ class SwTest:
             return False
 
         response = response.json()
-        es_properties = self._get_properties(response)
+        es_properties = {"esVersion": response.get("version").get("number"),
+                         "name": response.get("name"),
+                         "clusterName": response.get("cluster_name"),
+                         "apacheLuceneVersion": response.get("version").get("lucene_version")
+                         }
 
         ptprint(f"Elasticsearch version: {es_properties['esVersion']}", "VULN", not self.args.json, indent=4)
         ptprint(f"Cluster name: {es_properties['clusterName']}", "VULN", not self.args.json, indent=4)
@@ -114,9 +88,9 @@ class SwTest:
             modules = response["nodes"][node]["modules"]
             for module in modules:
                 module_properties = {
-                    "name": module["name"],
-                    "version": module["version"],
-                    "description": module["description"]
+                    "name": module.get("name"),
+                    "version": module.get("version"),
+                    "description": module.get("description")
                 }
                 json_node = self.ptjsonlib.create_node_object("swModule", properties=module_properties)
                 self.ptjsonlib.add_node(json_node)

@@ -33,13 +33,15 @@ class Auth:
 
     def _print_anon_role(self):
         """
-        This method prints the role of the anonymous user
+        This method prints the role of the anonymous user (if any)
         """
         url = self.args.url + "_security/user"
         response = self.http_client.send_request(url , method="GET", headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != http.HTTPStatus.OK:
-            self.ptjsonlib.end_error(f"Webpage returns status code: {response.status_code}", self.args.json)
+            ptprint(f"Error when probing authentication at {url}. Received response: {response.text}", "ERROR",
+                    not self.args.json, indent=4)
+            return
 
         users = response.json()
 
@@ -47,7 +49,7 @@ class Auth:
             if "anon" in user or "anonymous" in user:
                 ptprint(f"Authentication is enabled, but anonymous access is allowed", "VULN", not self.args.json,
                         indent=4)
-                ptprint(f"Anonymous role: {', '.join(users[user]['roles'])}", "VULN", not self.args.json, indent=7)
+                ptprint(f"Anonymous role: {', '.join(users[user]['roles'])}", "VULN", not self.args.json, indent=8)
                 return
 
         ptprint(f"Authentication is enabled. Anonymous access is not available", "OK", not self.args.json, indent=4)
@@ -58,14 +60,15 @@ class Auth:
         """
         This method checks to see if authentication is truly disabled or anonymous access is allowed
         """
-        url = self.args.url + "_xpack?filter_path=features.security"
-        security = self.http_client.send_request(url , method="GET", headers=self.args.headers, allow_redirects=False)
+        url = f"{self.args.url}_xpack?filter_path=features.security"
+        response = self.http_client.send_request(url , method="GET", headers=self.args.headers, allow_redirects=False)
 
-        if security.status_code != http.HTTPStatus.OK:
-            ptprint(f"Error when probing authentication at {url}. Received response: {security.status_code}", "ERROR", not self.args.json, indent=4)
+        if response.status_code != http.HTTPStatus.OK:
+            ptprint(f"Error when probing authentication at {url}. Received response: {response.status_code}",
+                    "ERROR", not self.args.json, indent=4)
             return
 
-        security = security.json()
+        security = response.json()
 
         if not security["features"]["security"]["enabled"]:
             ptprint(f"Authentication is disabled", "VULN", not self.args.json, indent=4)
@@ -96,7 +99,7 @@ class Auth:
             self._test_anon_auth()
 
         else:
-            self.ptjsonlib.end_error(f"Webpage returns status code: {response.status_code}", self.args.json)
+            ptprint(f"Webpage returns status code: {response.status_code}", "OK", not self.args.json, indent=4)
 
 
 def run(args, ptjsonlib, helpers, http_client, base_response):

@@ -8,7 +8,6 @@ Contains:
 
 import http
 from http.client import responses
-from http.cookiejar import cut_port_re
 from mimetypes import inited
 import json
 from typing import Literal
@@ -83,6 +82,7 @@ class DataDump:
         This method sends an HTTP GET request to all the indices provided with the -di/--dump-index argument (all indices if none are provided)
         and dumps all data from it. If --df/--dump-fields are set, it extracts the desired fields from the data with the _get_field() method
         """
+        full_data = []
 
         for index in self.args.dump_index:
             response = self.http_client.send_request(method="GET",url=self.args.url + f"{index}/_search?size=10000")
@@ -93,7 +93,6 @@ class DataDump:
                 continue
 
             data = response.json()["hits"]["hits"]  # limit 10 000 hits
-            full_data = []
 
             if self.args.dump_field:
 
@@ -104,10 +103,10 @@ class DataDump:
 
             else:
                 ptprint(data, "INFO", not self.args.json, indent=4)
-                full_data = data
+                full_data.append(data) if data else None
 
-            if self.args.out_file and full_data:
-                self._write_to_file(full_data)
+        if self.args.out_file and full_data:
+            self._write_to_file(full_data)
 
 
 def run(args, ptjsonlib, helpers, http_client, base_response):
