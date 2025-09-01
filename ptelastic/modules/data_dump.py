@@ -71,7 +71,7 @@ class DataDump:
 
 
     def _write_to_file(self, data) -> None:
-        with open(self.args.out_file, "w", encoding='utf-8') as f:
+        with open(self.args.output, "w", encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
 
@@ -105,7 +105,7 @@ class DataDump:
                 ptprint(data, "VULN", not self.args.json, indent=4)
                 full_data.append(data) if data else None
 
-        if self.args.out_file and full_data:
+        if self.args.output and full_data:
             self._write_to_file(full_data)
 
 
