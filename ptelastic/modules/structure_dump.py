@@ -16,6 +16,7 @@ from xml.etree.ElementPath import prepare_parent
 
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
+import json
 
 __TESTLABEL__ = "Elasticsearch data structure test"
 
@@ -43,7 +44,7 @@ class StrucDump:
         response = self.http_client.send_request(method="GET", url=self.args.url+"_cat/indices?pretty", headers=self.args.headers)
 
         if response.status_code != HTTPStatus.OK:
-            ptprint(f"Error fetching indices. Received response: {response.status_code} {response.text}", "ERROR",
+            ptprint(f"Error fetching indices. Received response: {response.status_code} {json.dumps(response.json(),indent=4)}", "ERROR",
                     not self.args.json, indent=4)
             return []
 
@@ -91,7 +92,7 @@ class StrucDump:
             response = self.http_client.send_request(method="GET", url=self.args.url + index)
 
             if response.status_code != HTTPStatus.OK:
-                ptprint(f"Error fetching index {index}. Received response: {response.status_code} {response.text}",
+                ptprint(f"Error fetching index {index}. Received response: {response.status_code} {json.dumps(response.json(), indent=4)}",
                         "ADDITIONS",
                         self.args.verbose, indent=4, colortext=True)
                 continue
