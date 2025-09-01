@@ -77,8 +77,9 @@ class SwTest:
         response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != HTTPStatus.OK:
-            ptprint(f"Could not enumerate modules. Received response code: {response.status_code}", "OK",
+            ptprint(f"Could not enumerate modules", "OK",
                     not self.args.json, indent=4)
+            ptprint(f"Received response code: {response.status_code}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
             return False
 
         response = response.json()
@@ -114,8 +115,10 @@ class SwTest:
         response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != HTTPStatus.OK:
-            ptprint(f"Could not enumerate plugins. Received response code: {response.status_code}", "OK",
+            ptprint(f"Could not enumerate plugins.", "OK",
                     not self.args.json, indent=4)
+            ptprint(f"Received response code: {response.status_code}", "ADDITIONS", self.args.verbose, indent=4,
+                    colortext=True)
             return False
 
         plugins = [line.split(" ") for line in response.text.split("\n")]
@@ -149,20 +152,23 @@ class SwTest:
         try:
             es_version = self._get_es_version()
         except Exception as e:
-            ptprint(f"Error when enumerating es version: {e}", "ERROR",
+            ptprint(f"Error when enumerating es version", "ERROR",
                     not self.args.json, indent=4)
+            ptprint(f"{e}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
 
         try:
             modules = self._get_modules()
         except Exception as e:
-            ptprint(f"Error when enumerating modules: {e}", "ERROR",
+            ptprint(f"Error when enumerating modules", "ERROR",
                     not self.args.json, indent=4)
+            ptprint(f"{e}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
 
         try:
             plugins = self._get_plugins()
         except Exception as e:
-            ptprint(f"Error when enumerating plugins: {e}", "ERROR",
+            ptprint(f"Error when enumerating plugins", "ERROR",
                     not self.args.json, indent=4)
+            ptprint(f"{e}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
 
         if plugins or modules or es_version:
             self.ptjsonlib.add_vulnerability("PTV-WEB-MISC-TECH")

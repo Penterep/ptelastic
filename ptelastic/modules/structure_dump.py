@@ -92,8 +92,8 @@ class StrucDump:
 
             if response.status_code != HTTPStatus.OK:
                 ptprint(f"Error fetching index {index}. Received response: {response.status_code} {response.text}",
-                        "ERROR",
-                        not self.args.json, indent=4)
+                        "ADDITIONS",
+                        self.args.verbose, indent=4, colortext=True)
                 continue
 
             response = response.json()
@@ -101,7 +101,7 @@ class StrucDump:
             try:
                 fields = self._get_fields(mapping=response[index]["mappings"])
             except KeyError as e:
-                ptprint(f"Index {index} has no mappings with {e} field", "ERROR", not self.args.json, indent=4)
+                ptprint(f"Index {index} has no mappings with {e} field", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
                 continue
 
             ptprint(f"Index {index}", "VULN", not self.args.json, indent=4)

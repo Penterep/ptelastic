@@ -65,7 +65,7 @@ class DataDump:
             try:
                 results.update({field: self._get_data(data, field)})
             except KeyError as e:
-                ptprint(f"The entry {entry} does not contain field {e}", "ERROR", self.args.verbose, indent=4)
+                ptprint(f"The entry {entry} does not contain field {e}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
 
         return results if len(results.keys()) > 2 else {}
 
@@ -89,7 +89,7 @@ class DataDump:
 
             if response.status_code != HTTPStatus.OK:
                 ptprint(f"Error when reading indices: Received response: {response.status_code} {response.text}",
-                        "ERROR", not self.args.json, indent=4)
+                        "ADDITIONS", not self.args.json, indent=4, colortext=True)
                 continue
 
             data = response.json()["hits"]["hits"]  # limit 10 000 hits
