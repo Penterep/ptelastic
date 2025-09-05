@@ -270,6 +270,30 @@ def get_help():
         }]
 
 def parse_args() -> argparse.Namespace:
+    def _check_url(url: str) -> str:
+        """
+        This method edits the provided URL.
+
+        Adds '\\http://' to the begging of the URL if no protocol is provided
+
+        www.example.com:9200 -> \\http://www.example.com:9200
+
+        Doesn't do anything if a protocol is provided
+
+        Also adds trailing '/' if missing
+
+        :return: Edited URL
+        """
+
+        if "http://" not in url and "https://" not in url:
+            return "http://" + url
+
+        if url[-1] != '/':
+            url += '/'
+
+        return url
+
+
     parser = argparse.ArgumentParser(add_help="False", description=f"{SCRIPTNAME} <options>")
     parser.add_argument("-u",  "--url",            type=str, required=True)
     parser.add_argument("-ts", "--tests",         type=lambda s: s.lower(), nargs="+")
@@ -299,8 +323,8 @@ def parse_args() -> argparse.Namespace:
 
     args = parser.parse_args()
     args.proxy = {"http": args.proxy, "https": args.proxy}
-    if args.url[-1] != '/':
-        args.url += '/'
+
+    args.url = _check_url(args.url)
 
     if args.user and args.password:
         proto = args.url.find("//")+2

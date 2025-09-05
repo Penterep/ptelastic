@@ -52,27 +52,6 @@ class HttpTest:
             ptprint(f"The host is not running on HTTP", "OK", not self.args.json, indent=4)
 
 
-    def _check_url(self) -> str:
-        """
-        This method edits the provided URL.
-
-        Adds '\\http://' to the begging of the URL if no protocol is provided
-
-        www.example.com:9200 -> \\http://www.example.com:9200
-
-        Doesn't do anything if a protocol is provided
-
-        :return: Edited URL
-        """
-
-        url = self.args.url
-
-        if "http://" not in url and "https://" not in url:
-            return "http://" + url
-
-        return url
-
-
     def run(self) -> None:
         """
         Executes the Elasticsearch HTTP/S test
@@ -82,10 +61,8 @@ class HttpTest:
         If we're provided with an HTTPS URL, we just print a message that says the host is running on HTTPS
         """
 
-        url = self._check_url()
-
-        if "http://" in url:
-            self._check_http(url)
+        if "http://" in self.args.url:
+            self._check_http(self.args.url)
             return
 
         ptprint(f"The host is not running on HTTP", "OK", not self.args.json, indent=4)

@@ -53,6 +53,8 @@ class IsElastic:
 
         response = self.base_response
 
+        ptprint(f"Full response: {response.text}", "ADDITIONS", self.args.verbose, colortext=True)
+
         if "application/json" not in response.headers.get("content-type", ""):
             self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
 
