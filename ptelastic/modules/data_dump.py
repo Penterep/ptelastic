@@ -65,13 +65,13 @@ class DataDump:
             try:
                 results.update({field: self._get_data(data, field)})
             except KeyError as e:
-                ptprint(f"The entry {entry} does not contain field {e}", "ERROR", self.args.verbose, indent=4)
+                ptprint(f"The entry {entry} does not contain field {e}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
 
         return results if len(results.keys()) > 2 else {}
 
 
     def _write_to_file(self, data) -> None:
-        with open(self.args.out_file, "w", encoding='utf-8') as f:
+        with open(self.args.output, "w", encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
 
@@ -89,7 +89,7 @@ class DataDump:
 
             if response.status_code != HTTPStatus.OK:
                 ptprint(f"Error when reading indices: Received response: {response.status_code} {response.text}",
-                        "ERROR", not self.args.json, indent=4)
+                        "ADDITIONS", not self.args.json, indent=4, colortext=True)
                 continue
 
             data = response.json()["hits"]["hits"]  # limit 10 000 hits
@@ -98,14 +98,14 @@ class DataDump:
 
                 for entry in data:
                     isolated_data = self._get_field(entry)
-                    ptprint(isolated_data, "INFO", not self.args.json, indent=4) if isolated_data else None
+                    ptprint(json.dumps(isolated_data, indent=4), "ADDITIONS", not self.args.json, indent=4) if isolated_data else None
                     full_data.append(isolated_data) if isolated_data else None
 
             else:
-                ptprint(data, "INFO", not self.args.json, indent=4)
+                ptprint(json.dumps(data, indent=4), "ADDITIONS", not self.args.json, indent=4)
                 full_data.append(data) if data else None
 
-        if self.args.out_file and full_data:
+        if self.args.output and full_data:
             self._write_to_file(full_data)
 
 

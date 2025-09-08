@@ -16,6 +16,7 @@ from xml.etree.ElementPath import prepare_parent
 
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
+import json
 
 __TESTLABEL__ = "Elasticsearch data structure test"
 
@@ -43,7 +44,7 @@ class StrucDump:
         response = self.http_client.send_request(method="GET", url=self.args.url+"_cat/indices?pretty", headers=self.args.headers)
 
         if response.status_code != HTTPStatus.OK:
-            ptprint(f"Error fetching indices. Received response: {response.status_code} {response.text}", "ERROR",
+            ptprint(f"Error fetching indices. Received response: {response.status_code} {json.dumps(response.json(),indent=4)}", "ERROR",
                     not self.args.json, indent=4)
             return []
 
@@ -91,9 +92,9 @@ class StrucDump:
             response = self.http_client.send_request(method="GET", url=self.args.url + index)
 
             if response.status_code != HTTPStatus.OK:
-                ptprint(f"Error fetching index {index}. Received response: {response.status_code} {response.text}",
-                        "ERROR",
-                        not self.args.json, indent=4)
+                ptprint(f"Error fetching index {index}. Received response: {response.status_code} {json.dumps(response.json(), indent=4)}",
+                        "ADDITIONS",
+                        self.args.verbose, indent=4, colortext=True)
                 continue
 
             response = response.json()
@@ -101,11 +102,11 @@ class StrucDump:
             try:
                 fields = self._get_fields(mapping=response[index]["mappings"])
             except KeyError as e:
-                ptprint(f"Index {index} has no mappings with {e} field", "ERROR", not self.args.json, indent=4)
+                ptprint(f"Index {index} has no mappings with {e} field", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
                 continue
 
-            ptprint(f"Index {index}", "INFO", not self.args.json, indent=4)
-            ptprint(', '.join(fields), "INFO", not self.args.json, indent=8)
+            ptprint(f"Index {index}", "VULN", not self.args.json, indent=4)
+            ptprint(', '.join(fields), "VULN", not self.args.json, indent=8)
 
 def run(args, ptjsonlib, helpers, http_client, base_response):
     """Entry point for running the StrucDump test"""

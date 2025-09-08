@@ -105,8 +105,9 @@ class Users:
                                                  headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != HTTPStatus.OK:
-            ptprint(f"Could not enumerate users. Received status code: {response.status_code}",
+            ptprint(f"Could not enumerate users.",
                     "OK", not self.args.json, indent=4)
+            ptprint(f"Received status code: {response.status_code}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
             return
 
         users = response.json()
