@@ -56,10 +56,14 @@ class PtElastic:
 
     def run(self) -> None:
         """Main method"""
+
         self._fetch_initial_response()
-        self._check_if_target_runs_elastic()
 
         tests = self.args.tests or _get_all_available_modules()
+
+        if "_is_elastic" not in tests:
+            self._check_if_target_runs_elastic()
+
         self.ptthreads.threads(tests, self.run_single_module, self.args.threads)
 
         self.ptjsonlib.set_status("finished")
