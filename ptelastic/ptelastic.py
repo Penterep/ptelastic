@@ -59,10 +59,10 @@ class PtElastic:
 
         self._fetch_initial_response()
 
-        if self.args.tests and "is_elastic" in self.args.tests:
-            self.args.tests.remove("is_elastic")
-
         tests = self.args.tests or _get_all_available_modules()
+
+        if "is_elastic" in tests:
+            tests.remove("is_elastic")
 
         self._check_if_target_runs_elastic()
 
