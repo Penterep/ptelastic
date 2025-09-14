@@ -39,7 +39,7 @@ from helpers.helpers import Helpers
 from _version import __version__
 
 
-from modules._is_elastic import IsElastic
+from modules.is_elastic import IsElastic
 
 class PtElastic:
     def __init__(self, args):
@@ -59,10 +59,12 @@ class PtElastic:
 
         self._fetch_initial_response()
 
+        if self.args.tests and "is_elastic" in self.args.tests:
+            self.args.tests.remove("is_elastic")
+
         tests = self.args.tests or _get_all_available_modules()
 
-        if "_is_elastic" not in tests:
-            self._check_if_target_runs_elastic()
+        self._check_if_target_runs_elastic()
 
         self.ptthreads.threads(tests, self.run_single_module, self.args.threads)
 
