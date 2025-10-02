@@ -22,12 +22,13 @@ class IsElastic:
     This class checks to see if a host is running Elasticsearch by looking for JSON content in the hosts response
     """
 
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object, kbn: bool) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
         self.base_response = base_response
+        self.kbn = kbn
 
         self.helpers.print_header(__TESTLABEL__)
 
@@ -82,6 +83,6 @@ class IsElastic:
             self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
 
 
-def run(args, ptjsonlib, helpers, http_client, base_response):
+def run(args, ptjsonlib, helpers, http_client, base_response, kbn=False):
     """Entry point for running the IsElastic test"""
-    IsElastic(args, ptjsonlib, helpers, http_client, base_response).run()
+    IsElastic(args, ptjsonlib, helpers, http_client, base_response, kbn).run()

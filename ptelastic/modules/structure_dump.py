@@ -25,12 +25,13 @@ class StrucDump:
     """
     This class gets all indices from an ES instance and then dumps what fields each index contains
     """
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object, kbn: bool) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
         self.base_response = base_response
+        self.kbn = kbn
 
         self.helpers.print_header(__TESTLABEL__)
 
@@ -41,7 +42,8 @@ class StrucDump:
 
         :return: List of indices if successful. Empty list otherwise
         """
-        response = self.http_client.send_request(method="GET", url=self.args.url+"_cat/indices?pretty", headers=self.args.headers)
+        request = self.helpers.KbnUrlParser(self.args.url, "_cat/indices?pretty", "GET", self.kbn)
+        response = self.http_client.send_request(method=request.method, url=request.url, headers=self.args.headers)
 
         if response.status_code != HTTPStatus.OK:
             ptprint(f"Error fetching indices. Received response: {response.status_code} {json.dumps(response.json(),indent=4)}", "ERROR",
@@ -89,7 +91,8 @@ class StrucDump:
             if not self.args.verbose and index.startswith("."):
                 continue
 
-            response = self.http_client.send_request(method="GET", url=self.args.url + index)
+            request = self.helpers.KbnUrlParser(self.args.url, index, "GET", self.kbn)
+            response = self.http_client.send_request(url=request.url, method=request.method, headers=self.args.headers)
 
             if response.status_code != HTTPStatus.OK:
                 ptprint(f"Error fetching index {index}. Received response: {response.status_code} {json.dumps(response.json(), indent=4)}",
@@ -108,6 +111,6 @@ class StrucDump:
             ptprint(f"Index {index}", "VULN", not self.args.json, indent=4)
             ptprint(', '.join(fields), "VULN", not self.args.json, indent=8)
 
-def run(args, ptjsonlib, helpers, http_client, base_response):
+def run(args, ptjsonlib, helpers, http_client, base_response, kbn=False):
     """Entry point for running the StrucDump test"""
-    StrucDump(args, ptjsonlib, helpers, http_client, base_response).run()
+    StrucDump(args, ptjsonlib, helpers, http_client, base_response, kbn).run()

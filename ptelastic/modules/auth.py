@@ -21,25 +21,26 @@ class Auth:
     sending a GET request to the provided URL and looking at the HTTP response code.
     """
 
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object, kbn: bool) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
         self.base_response = base_response
-
+        self.kbn = kbn
         self.helpers.print_header(__TESTLABEL__)
+
 
 
     def _print_anon_role(self):
         """
         This method prints the role of the anonymous user (if any)
         """
-        url = self.args.url + "_security/user"
-        response = self.http_client.send_request(url , method="GET", headers=self.args.headers, allow_redirects=False)
+        request = self.helpers.KbnUrlParser(self.args.url, "_security/user", "GET", self.kbn)
+        response = self.http_client.send_request(request.url , method=request.method, headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != http.HTTPStatus.OK:
-            ptprint(f"Error when probing authentication at {url}. Received response: {response.text}", "ERROR",
+            ptprint(f"Error when probing authentication at {request.url}. Received response: {response.text}", "ERROR",
                     not self.args.json, indent=4)
             return
 
@@ -60,11 +61,11 @@ class Auth:
         """
         This method checks to see if authentication is truly disabled or anonymous access is allowed
         """
-        url = f"{self.args.url}_xpack?filter_path=features.security"
-        response = self.http_client.send_request(url , method="GET", headers=self.args.headers, allow_redirects=False)
+        request = self.helpers.KbnUrlParser(self.args.url, "_xpack?filter_path=features.security", "GET", self.kbn)
+        response = self.http_client.send_request(request.url , method=request.method, headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != http.HTTPStatus.OK:
-            ptprint(f"Error when probing authentication at {url}. Received response: {response.status_code}",
+            ptprint(f"Error when probing authentication at {request.url}. Received response: {response.status_code}",
                     "ERROR", not self.args.json, indent=4)
             return
 
@@ -102,6 +103,6 @@ class Auth:
             ptprint(f"Webpage returns status code: {response.status_code}", "OK", not self.args.json, indent=4)
 
 
-def run(args, ptjsonlib, helpers, http_client, base_response):
+def run(args, ptjsonlib, helpers, http_client, base_response, kbn=False):
     """Entry point for running the Auth test"""
-    Auth(args, ptjsonlib, helpers, http_client, base_response).run()
+    Auth(args, ptjsonlib, helpers, http_client, base_response, kbn).run()
