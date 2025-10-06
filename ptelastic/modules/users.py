@@ -25,12 +25,13 @@ class Users:
     """
     This class enumerates what users are available, their roles and privileges
     """
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object, kbn: bool) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
         self.base_response = base_response
+        self.kbn = kbn
 
         self.helpers.print_header(__TESTLABEL__)
 
@@ -101,7 +102,8 @@ class Users:
         If the host returns an HTTP response other than 200 OK we exit
         """
         check_roles = False
-        response = self.http_client.send_request(self.args.url+"_security/user", method="GET",
+        request = self.helpers.KbnUrlParser(self.args.url, "_security/user", "GET", self.kbn)
+        response = self.http_client.send_request(request.url, method=request.method,
                                                  headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != HTTPStatus.OK:
@@ -111,7 +113,8 @@ class Users:
             return
 
         users = response.json()
-        response = self.http_client.send_request(self.args.url + "_security/role", method="GET",
+        request = self.helpers.KbnUrlParser(self.args.url, "_security/role", "GET", self.kbn)
+        response = self.http_client.send_request(request.url, method=request.method,
                                                  headers=self.args.headers, allow_redirects=False)
         if response.status_code == HTTPStatus.OK:
             check_roles = True
@@ -125,6 +128,6 @@ class Users:
             self._print_user(user_properties, check_roles, response.json())
 
 
-def run(args, ptjsonlib, helpers, http_client, base_response):
+def run(args, ptjsonlib, helpers, http_client, base_response, kbn=False):
     """Entry point for running the IsElastic test"""
-    Users(args, ptjsonlib, helpers, http_client, base_response).run()
+    Users(args, ptjsonlib, helpers, http_client, base_response, kbn).run()

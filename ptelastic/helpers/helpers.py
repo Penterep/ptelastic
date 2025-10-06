@@ -31,3 +31,13 @@ class Helpers:
                 return node["key"]
 
         return ""
+
+    class KbnUrlParser:
+        """This class parses a URL if a PTELASTIC module was ran through the Kibana proxy"""
+        def __init__(self, url: str, endpoint: str, method: str, kbn: bool):
+            if kbn:
+                self.url = url + f"api/console/proxy?path={endpoint}&method={method}"
+                self.method = "POST"
+            else:
+                self.url = url + endpoint
+                self.method = method

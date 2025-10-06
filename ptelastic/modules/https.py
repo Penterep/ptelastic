@@ -18,12 +18,13 @@ class HttpTest:
     This class tests to see if the host has Elasticsearch running on HTTP or HTTPS
     """
 
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object, kbn: bool) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
         self.base_response = base_response
+        self.kbn = kbn
 
         self.helpers.print_header(__TESTLABEL__)
 
@@ -43,7 +44,8 @@ class HttpTest:
         if url == self.args.url:
             response = self.base_response
         else:
-            response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
+            request = self.helpers.KbnUrlParser(url, "", "GET", self.kbn)
+            response = self.http_client.send_request(request.url, method=request.method, headers=self.args.headers, allow_redirects=False)
 
         if response.status_code in [HTTPStatus.OK, HTTPStatus.UNAUTHORIZED]:
             ptprint(f"The host is running on HTTP", "VULN", not self.args.json, indent=4)
@@ -68,6 +70,6 @@ class HttpTest:
         ptprint(f"The host is not running on HTTP", "OK", not self.args.json, indent=4)
 
 
-def run(args, ptjsonlib, helpers, http_client, base_response):
+def run(args, ptjsonlib, helpers, http_client, base_response, kbn=False):
     """Entry point for running the HTTP/S test"""
-    HttpTest(args, ptjsonlib, helpers, http_client, base_response).run()
+    HttpTest(args, ptjsonlib, helpers, http_client, base_response, kbn).run()

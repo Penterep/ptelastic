@@ -21,12 +21,13 @@ class SwTest:
     """
     This class probes the Elasticsearch host and finds out what kind of software it has running
     """
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object, kbn: bool) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
         self.base_response = base_response
+        self.kbn = kbn
 
         self.helpers.print_header(__TESTLABEL__)
 
@@ -73,8 +74,8 @@ class SwTest:
 
         :return: False if we get an HTTP response other than 200 OK. True if we get an HTTP 200 OK and we find modules
         """
-        url = self.args.url + "_nodes"
-        response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
+        request = self.helpers.KbnUrlParser(self.args.url, "_nodes", "GET", self.kbn)
+        response = self.http_client.send_request(request.url, method=request.method, headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != HTTPStatus.OK:
             ptprint(f"Could not enumerate modules", "OK",
@@ -110,9 +111,8 @@ class SwTest:
 
         :return: False if we get an HTTP response other than 200 OK. True if we get an HTTP 200 OK
         """
-        url = self.args.url + "_cat/plugins"
-
-        response = self.http_client.send_request(url, method="GET", headers=self.args.headers, allow_redirects=False)
+        request = self.helpers.KbnUrlParser(self.args.url, "_cat/plugins", "GET", self.kbn)
+        response = self.http_client.send_request(request.url, method=request.method, headers=self.args.headers, allow_redirects=False)
 
         if response.status_code != HTTPStatus.OK:
             ptprint(f"Could not enumerate plugins.", "OK",
@@ -174,6 +174,6 @@ class SwTest:
             self.ptjsonlib.add_vulnerability("PTV-WEB-MISC-TECH")
 
 
-def run(args, ptjsonlib, helpers, http_client, base_response):
+def run(args, ptjsonlib, helpers, http_client, base_response, kbn=False):
     """Entry point for running the software test"""
-    SwTest(args, ptjsonlib, helpers, http_client, base_response).run()
+    SwTest(args, ptjsonlib, helpers, http_client, base_response, kbn).run()
