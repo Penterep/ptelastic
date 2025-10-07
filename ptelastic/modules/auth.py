@@ -11,6 +11,7 @@ Contains:
 import http
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
+from http import HTTPStatus
 
 __TESTLABEL__ = "Elasticsearch authentication test"
 
@@ -39,7 +40,7 @@ class Auth:
         request = self.helpers.KbnUrlParser(self.args.url, "_security/user", "GET", self.kbn)
         response = self.http_client.send_request(request.url , method=request.method, headers=self.args.headers, allow_redirects=False)
 
-        if response.status_code != http.HTTPStatus.OK:
+        if response.status_code != http.HTTPStatus.OK or response.json().get("status", 200) != HTTPStatus.OK:
             ptprint(f"Error when probing authentication at {request.url}. Received response: {response.text}", "ERROR",
                     not self.args.json, indent=4)
             return
@@ -64,7 +65,7 @@ class Auth:
         request = self.helpers.KbnUrlParser(self.args.url, "_xpack?filter_path=features.security", "GET", self.kbn)
         response = self.http_client.send_request(request.url , method=request.method, headers=self.args.headers, allow_redirects=False)
 
-        if response.status_code != http.HTTPStatus.OK:
+        if response.status_code != http.HTTPStatus.OK or response.json().get("status", 200) != HTTPStatus.OK:
             ptprint(f"Error when probing authentication at {request.url}. Received response: {response.status_code}",
                     "ERROR", not self.args.json, indent=4)
             return

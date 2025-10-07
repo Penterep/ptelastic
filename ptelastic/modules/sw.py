@@ -77,7 +77,7 @@ class SwTest:
         request = self.helpers.KbnUrlParser(self.args.url, "_nodes", "GET", self.kbn)
         response = self.http_client.send_request(request.url, method=request.method, headers=self.args.headers, allow_redirects=False)
 
-        if response.status_code != HTTPStatus.OK:
+        if response.status_code != HTTPStatus.OK or response.json().get("status", 200) != HTTPStatus.OK:
             ptprint(f"Could not enumerate modules", "OK",
                     not self.args.json, indent=4)
             ptprint(f"Received response code: {response.status_code}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
@@ -114,7 +114,7 @@ class SwTest:
         request = self.helpers.KbnUrlParser(self.args.url, "_cat/plugins", "GET", self.kbn)
         response = self.http_client.send_request(request.url, method=request.method, headers=self.args.headers, allow_redirects=False)
 
-        if response.status_code != HTTPStatus.OK:
+        if response.status_code != HTTPStatus.OK or response.json().get("status", 200) != HTTPStatus.OK:
             ptprint(f"Could not enumerate plugins.", "OK",
                     not self.args.json, indent=4)
             ptprint(f"Received response code: {response.status_code}", "ADDITIONS", self.args.verbose, indent=4,

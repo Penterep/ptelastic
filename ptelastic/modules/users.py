@@ -106,7 +106,7 @@ class Users:
         response = self.http_client.send_request(request.url, method=request.method,
                                                  headers=self.args.headers, allow_redirects=False)
 
-        if response.status_code != HTTPStatus.OK:
+        if response.status_code != HTTPStatus.OK or response.json().get("status", "") != HTTPStatus.OK:
             ptprint(f"Could not enumerate users.",
                     "OK", not self.args.json, indent=4)
             ptprint(f"Received status code: {response.status_code}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)

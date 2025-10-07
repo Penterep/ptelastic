@@ -89,7 +89,7 @@ class DataDump:
             request = self.helpers.KbnUrlParser(self.args.url, f"{index}/_search?size=10000", "GET", self.kbn)
             response = self.http_client.send_request(url=request.url, method=request.method, headers=self.args.headers)
 
-            if response.status_code != HTTPStatus.OK:
+            if response.status_code != HTTPStatus.OK or response.json().get("status", 200) != HTTPStatus.OK:
                 ptprint(f"Error when reading indices: Received response: {response.status_code} {response.text}",
                         "ADDITIONS", not self.args.json, indent=4, colortext=True)
                 continue

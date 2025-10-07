@@ -45,7 +45,7 @@ class StrucDump:
         request = self.helpers.KbnUrlParser(self.args.url, "_cat/indices?pretty", "GET", self.kbn)
         response = self.http_client.send_request(method=request.method, url=request.url, headers=self.args.headers)
 
-        if response.status_code != HTTPStatus.OK:
+        if response.status_code != HTTPStatus.OK or response.json().get("status", 200) != HTTPStatus.OK:
             ptprint(f"Error fetching indices. Received response: {response.status_code} {json.dumps(response.json(),indent=4)}", "ERROR",
                     not self.args.json, indent=4)
             return []
@@ -94,7 +94,7 @@ class StrucDump:
             request = self.helpers.KbnUrlParser(self.args.url, index, "GET", self.kbn)
             response = self.http_client.send_request(url=request.url, method=request.method, headers=self.args.headers)
 
-            if response.status_code != HTTPStatus.OK:
+            if response.status_code != HTTPStatus.OK or response.json().get("status", 200) != HTTPStatus.OK:
                 ptprint(f"Error fetching index {index}. Received response: {response.status_code} {json.dumps(response.json(), indent=4)}",
                         "ADDITIONS",
                         self.args.verbose, indent=4, colortext=True)
