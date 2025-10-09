@@ -45,7 +45,12 @@ class StrucDump:
         request = self.helpers.KbnUrlParser(self.args.url, "_cat/indices?pretty", "GET", self.kbn)
         response = self.http_client.send_request(method=request.method, url=request.url, headers=self.args.headers)
 
-        if response.status_code != HTTPStatus.OK or response.json().get("status", 200) != HTTPStatus.OK:
+        try:
+            json_status = response.json().get("status", 200)
+        except ValueError:
+            json_status = 200
+
+        if response.status_code != HTTPStatus.OK or json_status != HTTPStatus.OK:
             ptprint(f"Error fetching indices. Received response: {response.status_code} {json.dumps(response.json(),indent=4)}", "ERROR",
                     not self.args.json, indent=4)
             return []
@@ -87,6 +92,8 @@ class StrucDump:
 
         If the -vv/--verbose switch is provided, the method prints hidden indices (indices starting with .) along all other indices.
         """
+        printed = False
+
         for index in self._get_indices():
             if not self.args.verbose and index.startswith("."):
                 continue
@@ -94,7 +101,12 @@ class StrucDump:
             request = self.helpers.KbnUrlParser(self.args.url, index, "GET", self.kbn)
             response = self.http_client.send_request(url=request.url, method=request.method, headers=self.args.headers)
 
-            if response.status_code != HTTPStatus.OK or response.json().get("status", 200) != HTTPStatus.OK:
+            try:
+                json_status = response.json().get("status", 200)
+            except ValueError:
+                json_status = 200
+
+            if response.status_code != HTTPStatus.OK or json_status != HTTPStatus.OK:
                 ptprint(f"Error fetching index {index}. Received response: {response.status_code} {json.dumps(response.json(), indent=4)}",
                         "ADDITIONS",
                         self.args.verbose, indent=4, colortext=True)
@@ -110,6 +122,10 @@ class StrucDump:
 
             ptprint(f"Index {index}", "VULN", not self.args.json, indent=4)
             ptprint(', '.join(fields), "VULN", not self.args.json, indent=8)
+            printed = True
+
+        if not printed:
+            ptprint("Could not find any non built-in indices", "INFO", not self.args.json, indent=4)
 
 def run(args, ptjsonlib, helpers, http_client, base_response, kbn=False):
     """Entry point for running the StrucDump test"""
