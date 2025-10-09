@@ -98,7 +98,8 @@ class PtElastic:
             ptjsonlib=self.ptjsonlib,
             helpers=self.helpers,
             http_client=self.http_client,
-            base_response=self.base_response
+            base_response=self.base_response,
+            kbn=False
         ).run()
         ptprint(" ", "TEXT", not self.args.json)
 
