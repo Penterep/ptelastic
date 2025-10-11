@@ -91,6 +91,8 @@ class StrucDump:
         the /<index name> endpoint and then retrieving all the fields with the method _get_fields()
 
         If the -vv/--verbose switch is provided, the method prints hidden indices (indices starting with .) along all other indices.
+
+        The method adds the retrieved mapping to the JSON output
         """
         printed = False
 
@@ -119,6 +121,11 @@ class StrucDump:
             except KeyError as e:
                 ptprint(f"Index {index} has no mappings with {e} field", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
                 continue
+
+            index_properties = {"name": index,
+                                "mappings": response.get(index, {}).get("mappings", {})}
+            mapping_node = self.ptjsonlib.create_node_object("indexStructure", properties=index_properties)
+            self.ptjsonlib.add_node(mapping_node)
 
             ptprint(f"Index {index}", "VULN", not self.args.json, indent=4)
             ptprint(', '.join(fields), "VULN", not self.args.json, indent=8)
