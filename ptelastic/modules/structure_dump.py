@@ -71,7 +71,7 @@ class StrucDump:
         :return: List of fields in an index mapping
         """
         fields = []
-        props = mapping["properties"]
+        props = mapping.get("properties", {})
 
         for field_name, field_info in props.items():
             full_name = f"{prefix}{field_name}" if not prefix else f"{prefix}.{field_name}"
@@ -97,7 +97,7 @@ class StrucDump:
         printed = False
 
         for index in self._get_indices():
-            if not self.args.verbose and index.startswith("."):
+            if not self.args.built_in and index.startswith("."):
                 continue
 
             request = self.helpers.KbnUrlParser(self.args.url, index, "GET", self.kbn)

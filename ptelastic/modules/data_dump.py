@@ -86,6 +86,9 @@ class DataDump:
         full_data = []
 
         for index in self.args.dump_index:
+            if not self.args.built_in and index.startswith("."):
+                continue
+
             request = self.helpers.KbnUrlParser(self.args.url, f"{index}/_search?size=10000", "GET", self.kbn)
             response = self.http_client.send_request(url=request.url, method=request.method, headers=self.args.headers)
 
