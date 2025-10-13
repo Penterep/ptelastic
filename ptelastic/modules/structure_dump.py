@@ -45,7 +45,12 @@ class StrucDump:
         request = self.helpers.KbnUrlParser(self.args.url, "_cat/indices?pretty", "GET", self.kbn)
         response = self.http_client.send_request(method=request.method, url=request.url, headers=self.args.headers)
 
-        if response.status_code != HTTPStatus.OK:
+        try:
+            json_status = response.json().get("status", 200)
+        except ValueError:
+            json_status = 200
+
+        if response.status_code != HTTPStatus.OK or json_status != HTTPStatus.OK:
             ptprint(f"Error fetching indices. Received response: {response.status_code} {json.dumps(response.json(),indent=4)}", "ERROR",
                     not self.args.json, indent=4)
             return []
@@ -66,7 +71,7 @@ class StrucDump:
         :return: List of fields in an index mapping
         """
         fields = []
-        props = mapping["properties"]
+        props = mapping.get("properties", {})
 
         for field_name, field_info in props.items():
             full_name = f"{prefix}{field_name}" if not prefix else f"{prefix}.{field_name}"
@@ -86,15 +91,24 @@ class StrucDump:
         the /<index name> endpoint and then retrieving all the fields with the method _get_fields()
 
         If the -vv/--verbose switch is provided, the method prints hidden indices (indices starting with .) along all other indices.
+
+        The method adds the retrieved mapping to the JSON output
         """
+        printed = False
+
         for index in self._get_indices():
-            if not self.args.verbose and index.startswith("."):
+            if not self.args.built_in and index.startswith("."):
                 continue
 
             request = self.helpers.KbnUrlParser(self.args.url, index, "GET", self.kbn)
             response = self.http_client.send_request(url=request.url, method=request.method, headers=self.args.headers)
 
-            if response.status_code != HTTPStatus.OK:
+            try:
+                json_status = response.json().get("status", 200)
+            except ValueError:
+                json_status = 200
+
+            if response.status_code != HTTPStatus.OK or json_status != HTTPStatus.OK:
                 ptprint(f"Error fetching index {index}. Received response: {response.status_code} {json.dumps(response.json(), indent=4)}",
                         "ADDITIONS",
                         self.args.verbose, indent=4, colortext=True)
@@ -108,8 +122,17 @@ class StrucDump:
                 ptprint(f"Index {index} has no mappings with {e} field", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
                 continue
 
+            index_properties = {"name": index,
+                                "mappings": response.get(index, {}).get("mappings", {})}
+            mapping_node = self.ptjsonlib.create_node_object("indexStructure", properties=index_properties)
+            self.ptjsonlib.add_node(mapping_node)
+
             ptprint(f"Index {index}", "VULN", not self.args.json, indent=4)
             ptprint(', '.join(fields), "VULN", not self.args.json, indent=8)
+            printed = True
+
+        if not printed:
+            ptprint("Could not find any non built-in indices", "INFO", not self.args.json, indent=4)
 
 def run(args, ptjsonlib, helpers, http_client, base_response, kbn=False):
     """Entry point for running the StrucDump test"""
