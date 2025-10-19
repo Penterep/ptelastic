@@ -121,6 +121,10 @@ class Users:
         request = self.helpers.KbnUrlParser(self.args.url, "_security/role", "GET", self.kbn)
         response = self.http_client.send_request(request.url, method=request.method,
                                                  headers=self.args.headers, allow_redirects=False)
+
+        if not self.helpers.check_json(response):
+            return
+
         if response.status_code == HTTPStatus.OK:
             check_roles = True
 

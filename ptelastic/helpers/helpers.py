@@ -7,6 +7,8 @@ import os
 
 from ptlibs.http.http_client import HttpClient
 from ptlibs.ptprinthelper import ptprint
+from requests import Response
+
 
 class Helpers:
     def __init__(self, args: object, ptjsonlib: object, http_client: object):
@@ -31,6 +33,18 @@ class Helpers:
                 return node["key"]
 
         return ""
+
+
+    def check_json(self, response: Response) -> bool:
+        try:
+            response.json()
+        except ValueError as e:
+            ptprint(f"Could not get JSON from response: {e}", "OK", not self.args.json, indent=4)
+            ptprint(f"Got response: {response.text}", "ADDITIONS", not self.args.json, indent=4, colortext=True)
+            return False
+
+        return True
+
 
     class KbnUrlParser:
         """This class parses a URL if a PTELASTIC module was ran through the Kibana proxy"""

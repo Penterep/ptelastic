@@ -114,6 +114,9 @@ class StrucDump:
                         self.args.verbose, indent=4, colortext=True)
                 continue
 
+            if not self.helpers.check_json(self.base_response):
+                return
+
             response = response.json()
 
             try:
