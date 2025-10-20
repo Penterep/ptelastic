@@ -117,6 +117,9 @@ class Users:
             ptprint(f"Received status code: {response.status_code}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
             return
 
+        if not self.helpers.check_json(response):
+            return
+
         users = response.json()
         request = self.helpers.KbnUrlParser(self.args.url, "_security/role", "GET", self.kbn)
         response = self.http_client.send_request(request.url, method=request.method,

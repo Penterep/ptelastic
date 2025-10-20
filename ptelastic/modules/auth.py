@@ -40,10 +40,10 @@ class Auth:
         request = self.helpers.KbnUrlParser(self.args.url, "_security/user", "GET", self.kbn)
         response = self.http_client.send_request(request.url , method=request.method, headers=self.args.headers, allow_redirects=False)
 
-        try:
-            json_status = response.json().get("status", 200)
-        except ValueError:
-            json_status = 200
+        if not self.helpers.check_json:
+            return
+
+        json_status = response.json().get("status", 200)
 
         if response.status_code != http.HTTPStatus.OK or json_status != HTTPStatus.OK:
             ptprint(f"Error when probing authentication at {request.url}. Received response: {response.text}", "ERROR",
@@ -70,10 +70,10 @@ class Auth:
         request = self.helpers.KbnUrlParser(self.args.url, "_xpack?filter_path=features.security", "GET", self.kbn)
         response = self.http_client.send_request(request.url , method=request.method, headers=self.args.headers, allow_redirects=False)
 
-        try:
-            json_status = response.json().get("status", 200)
-        except ValueError:
-            json_status = 200
+        if not self.helpers.check_json(response):
+            return
+
+        json_status = response.json().get("status", 200)
 
         if response.status_code != http.HTTPStatus.OK or json_status != HTTPStatus.OK:
             ptprint(f"Error when probing authentication at {request.url}. Received response: {response.status_code}",
@@ -82,7 +82,7 @@ class Auth:
 
         security = response.json()
 
-        if not security["features"]["security"]["enabled"]:
+        if not security.get("features", {}).get("security", {}).get("enabled", {}):
             ptprint(f"Authentication is disabled", "VULN", not self.args.json, indent=4)
             self.ptjsonlib.add_vulnerability("PTV-WEB-ELASTIC-AUTH")
             self.ptjsonlib.add_properties({"authentication": "disabled"})
