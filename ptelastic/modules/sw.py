@@ -42,6 +42,9 @@ class SwTest:
         :return: False if we get an HTTP response other than 200 OK, or we don't find the version in the response.
                  True If we get an HTTP 200 OK response and we find the version
         """
+        if not self.helpers.check_json(self.base_response):
+            return False
+
         response = self.base_response
 
         if response.status_code != HTTPStatus.OK:
