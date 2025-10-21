@@ -36,34 +36,6 @@ class StrucDump:
         self.helpers.print_header(__TESTLABEL__)
 
 
-    def _get_indices(self) -> list:
-        """
-        This method retrieves all available indices at an ES instance
-
-        :return: List of indices if successful. Empty list otherwise
-        """
-        request = self.helpers.KbnUrlParser(self.args.url, "_cat/indices?pretty", "GET", self.kbn)
-        response = self.http_client.send_request(method=request.method, url=request.url, headers=self.args.headers)
-
-        try:
-            json_status = response.json().get("status", 200)
-        except ValueError:
-            json_status = 200
-
-        if response.status_code != HTTPStatus.OK or json_status != HTTPStatus.OK:
-            ptprint(f"Error fetching indices. Received response: {response.status_code} {json.dumps(response.json(),indent=4)}", "ERROR",
-                    not self.args.json, indent=4)
-            return []
-
-        try:
-            indices = [line.split()[2] for line in response.text.strip().split("\n") if line.strip()]
-        except Exception as e:
-            ptprint(f"Error when reading indices: {e}", "ERROR", not self.args.json, indent=4)
-            return []
-
-        return indices
-
-
     def _get_fields(self, mapping, prefix="") -> list:
         """
         This method recursively collects all field paths from ES mapping.
@@ -87,7 +59,7 @@ class StrucDump:
         """
         Executes the Elasticsearch data structure test
 
-        This method gets all indices with the _get_indices() method and then prints fields in an index by sending a request to
+        This method gets all indices with the helpers get_indices() method and then prints fields in an index by sending a request to
         the /<index name> endpoint and then retrieving all the fields with the method _get_fields()
 
         If the -vv/--verbose switch is provided, the method prints hidden indices (indices starting with .) along all other indices.
@@ -96,7 +68,9 @@ class StrucDump:
         """
         printed = False
 
-        for index in self._get_indices():
+        indices = self.helpers.get_indices(self.http_client, self.args.url, self.kbn, self.args.headers)
+
+        for index in indices:
             if not self.args.built_in and index.startswith("."):
                 continue
 

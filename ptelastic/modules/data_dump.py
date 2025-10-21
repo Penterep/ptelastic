@@ -85,7 +85,9 @@ class DataDump:
         """
         full_data = []
 
-        for index in self.args.dump_index:
+        indices = self.args.dump_index or self.helpers.get_indices(self.http_client, self.args.url, self.kbn, self.args.headers)
+
+        for index in indices:
             if not self.args.built_in and index.startswith("."):
                 continue
 
