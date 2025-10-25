@@ -46,41 +46,51 @@ source ~/.zshrc
 
 ## Usage examples
 ```
-ptelastic -u htttps://www.example.com/
+ptelastic -u https://www.example.com/
 ```
 
 ## Options
 ```
-   -u   --url         <url>           Connect to URL
-   -ts  --tests       <test>          Specify one or more tests to perform:
-                       AUTH           Elasticsearch authentication test
-                       HTTPS          Elasticsearch HTTP/S test
-                       IS_ELASTIC     Elasticsearch availability test
-
-   -p   --proxy       <proxy>         Set proxy (e.g. http://127.0.0.1:8080)
-   -T   --timeout     <miliseconds>   Set timeout (default 10)
-   -t   --threads     <threads>       Set thread count (default 10)
-   -c   --cookie      <cookie>        Set cookie
-   -a   --user-agent  <a>             Set User-Agent header
-   -H   --headers     <header:value>  Set custom header(s)
-   -r   --redirects                   Follow redirects (default False)
-   -vv  --verbose                     Enable verbose mode
-   -v   --version                     Show script version and exit
-   -h   --help                        Show this help message and exit
-   -j   --json                        Output in JSON format
-   -U   --user        <username>      Set user to authenticate as
-   -P   --password    <password>      Set password to authenticate with
-   -F   --file        </path/to/file> File to read if host is vulnerable to CVE-2015-5531 (default /etc/passwd)
-   -di  --dump-index  <index1, ...>   Specify index to dump with data_dump module
-   -df  --dump-field  <field, ...>    Specify fields to dump with data_dump module
-   -o   --out-file    <filename>      Specify the name of the file to store structure/data dump to
-
-
+   -u   --url                              <url>                             Connect to URL
+   -ts  --tests                            <test>                            Specify one or more tests to perform:
+                                            AUTH                             Elasticsearch authentication test
+                                            CVE-2014-3120                    Elasticsearch CVE-2014-3120 test
+                                            CVE-2015-1427                    Elasticsearch CVE-2015-1427 test
+                                            CVE-2015-3337                    Elasticsearch CVE-2015-3337 test
+                                            CVE-2015-5531                    Elasticsearch CVE-2015-5531 test
+                                            CVE-LOOKUP                       Elasticsearch CVE lookup
+                                            DATA_DUMP                        Elasticsearch data dump module
+                                            HTTPS                            Elasticsearch HTTP/S test
+                                            IS_ELASTIC                       Elasticsearch availability test
+                                            STRUCTURE_DUMP                   Elasticsearch data structure test
+                                            SW                               Elasticsearch software test
+                                            USERS                            Elasticsearch user enumeration
+                                                                               
+   -p   --proxy                            <proxy>                           Set proxy (e.g. http://127.0.0.1:8080)
+   -T   --timeout                          <miliseconds>                     Set timeout (default 10)
+   -t   --threads                          <threads>                         Set thread count (default 10)
+   -c   --cookie                           <cookie>                          Set cookie
+   -a   --user-agent                       <a>                               Set User-Agent header
+   -H   --headers                          <header:value>                    Set custom header(s)
+   -r   --redirects                                                          Follow redirects (default False)
+   -vv  --verbose                                                            Enable verbose mode
+   -v   --version                                                            Show script version and exit
+   -h   --help                                                               Show this help message and exit
+   -j   --json                                                               Output in JSON format
+   -U   --user                                                               Set user to authenticate as
+   -P   --password                                                           Set password to authenticate with
+   -F   --file                             </path/to/file>                   File to read if host is vulnerable to CVE-2015-5531 (default /etc/passwd)
+   -di  --dump-index<index1, index2, ...>  Specify index to dump with data_dump module
+   -df  --dump-field                       <field1,field2, field3.subfield>  Specify fields to dump with data_dump module
+   -o   --output                           <filename>                        Specify the name of the file to store structure/data dump to
+   -b   --built-in                                                           Enumerate/dump built-in Elasticsearch indexes
 ```
 
 ## Dependencies
 ```
-ptlibs
+ptlibs>=1.0.32
+packaging
+requests
 ```
 
 ## License
@@ -100,6 +110,7 @@ you have been given permission to pentest. We do not accept any
 responsibility for any damage/harm that this application causes to your
 computer, or your network. Penterep is not responsible for any illegal
 or malicious use of this code. Be Ethical!
+
 
 
 
