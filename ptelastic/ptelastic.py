@@ -294,9 +294,9 @@ def parse_args() -> argparse.Namespace:
         """
 
         if "http://" not in url and "https://" not in url:
-            return "http://" + url
+            url =  "http://" + url
 
-        if url[-1] != '/':
+        if not url.endswith("/"):
             url += '/'
 
         return url
