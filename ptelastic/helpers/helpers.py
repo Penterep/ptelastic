@@ -8,6 +8,7 @@ import os
 from ptlibs.http.http_client import HttpClient
 from ptlibs.ptprinthelper import ptprint
 from requests import Response
+from http import HTTPStatus
 
 
 class Helpers:
