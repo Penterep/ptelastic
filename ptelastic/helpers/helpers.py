@@ -18,7 +18,6 @@ class Helpers:
         self.ptjsonlib = ptjsonlib
         self.http_client = http_client
 
-
     def print_header(self, test_label):
         ptprint(f"Testing: {test_label}", "TITLE", not self.args.json, colortext=True)
 
@@ -41,7 +40,7 @@ class Helpers:
             response.json()
         except ValueError as e:
             ptprint(f"Could not get JSON from response: {e}", "OK", not self.args.json, indent=4)
-            ptprint(f"Got response: {response.text}", "ADDITIONS", not self.args.json, indent=4, colortext=True)
+            ptprint(f"Got response: {response.text}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
             return False
 
         return True
