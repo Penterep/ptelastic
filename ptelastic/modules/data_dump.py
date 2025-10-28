@@ -85,7 +85,9 @@ class DataDump:
         """
         full_data = []
 
-        for index in self.args.dump_index:
+        indices = self.args.dump_index or self.helpers.get_indices(self.http_client, self.args.url, self.kbn, self.args.headers)
+
+        for index in indices:
             if not self.args.built_in and index.startswith("."):
                 continue
 
@@ -97,7 +99,7 @@ class DataDump:
             except ValueError:
                 json_status = 200
 
-            if response.status_code != HTTPStatus.OK or json_status != HTTPStatus.OK or self.helpers.check_json(response):
+            if response.status_code != HTTPStatus.OK or json_status != HTTPStatus.OK or not self.helpers.check_json(response):
                 ptprint(f"Error when reading indices: Received response: {response.status_code} {response.text}",
                         "ADDITIONS", not self.args.json, indent=4, colortext=True)
                 continue

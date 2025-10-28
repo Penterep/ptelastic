@@ -294,9 +294,9 @@ def parse_args() -> argparse.Namespace:
         """
 
         if "http://" not in url and "https://" not in url:
-            return "http://" + url
+            url =  "http://" + url
 
-        if url[-1] != '/':
+        if not url.endswith("/"):
             url += '/'
 
         return url
@@ -322,7 +322,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("-U", "--user",            type=str, default=None)
     parser.add_argument("-P", "--password",        type=str, default=None)
     parser.add_argument("-F", "--file",            type=str, default="/etc/passwd")
-    parser.add_argument("-di", "--dump-index",     type=lambda f: f.split(","), default="")
+    parser.add_argument("-di", "--dump-index",     type=lambda f: f.split(","), default=None)
     parser.add_argument("-df", "--dump-field",     type=lambda f: f.split(","), default=None)
     parser.add_argument("-o", "--output",        type=lambda o: f"{o}.json" if "json" not in o else o, default=None)
     parser.add_argument("-b", "--built-in", action="store_true")

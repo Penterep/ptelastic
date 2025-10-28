@@ -22,6 +22,14 @@ class IsElastic:
     This class checks to see if a host is running Elasticsearch by looking for JSON content in the hosts response
     """
 
+    class NotElasticsearch(Exception):
+        """
+        This custom exception is raised to exit the execution of PTEASLTIC and is raised when the host in not running Elasticsearch
+        """
+        def __init__(self):
+            super().__init__("The host is not running Elasticsearch")
+
+
     def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, base_response: object, kbn: bool) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
@@ -56,8 +64,10 @@ class IsElastic:
 
         ptprint(f"Full response: {response.text}", "ADDITIONS", self.args.verbose, colortext=True)
 
-        if "application/json" not in response.headers.get("content-type", ""):
+        if "application/json" not in response.headers.get("content-type", "") and not self.kbn:
             self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
+        elif self.kbn:
+            raise self.NotElasticsearch
 
         if response.status_code == HTTPStatus.UNAUTHORIZED:
             response_json = response.json()
@@ -79,6 +89,8 @@ class IsElastic:
                     ptprint(f"The host is running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
                 elif "application/json" in response.headers["Content-Type"]:
                     ptprint(f"The host might be running ElasticSearch", "INFO", not self.args.json, colortext=False, indent=4)
+        elif self.kbn:
+            raise self.NotElasticsearch
         else:
             self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
 

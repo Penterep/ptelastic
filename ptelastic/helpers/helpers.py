@@ -8,6 +8,7 @@ import os
 from ptlibs.http.http_client import HttpClient
 from ptlibs.ptprinthelper import ptprint
 from requests import Response
+from http import HTTPStatus
 
 
 class Helpers:
@@ -16,7 +17,6 @@ class Helpers:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.http_client = http_client
-
 
     def print_header(self, test_label):
         ptprint(f"Testing: {test_label}", "TITLE", not self.args.json, colortext=True)
@@ -40,7 +40,7 @@ class Helpers:
             response.json()
         except ValueError as e:
             ptprint(f"Could not get JSON from response: {e}", "OK", not self.args.json, indent=4)
-            ptprint(f"Got response: {response.text}", "ADDITIONS", not self.args.json, indent=4, colortext=True)
+            ptprint(f"Got response: {response.text}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
             return False
 
         return True
@@ -55,3 +55,32 @@ class Helpers:
             else:
                 self.url = url + endpoint
                 self.method = method
+
+    def get_indices(self, http_client: object, url: str, kbn: bool, headers: object):
+        """
+        This method retrieves all available indices at an ES instance
+
+        :return: List of indices if successful. Empty list otherwise
+        """
+        request = self.KbnUrlParser(url, "_cat/indices?pretty", "GET", kbn)
+        response = http_client.send_request(method=request.method, url=request.url, headers=headers)
+
+        try:
+            json_status = response.json().get("status", 200)
+        except ValueError:
+            json_status = 200
+
+        if response.status_code != HTTPStatus.OK or json_status != HTTPStatus.OK:
+            ptprint(
+                f"Error fetching indices. Received response: {response.status_code} {json.dumps(response.json(), indent=4)}",
+                "ERROR",
+                not self.args.json, indent=4)
+            return []
+
+        try:
+            indices = [line.split()[2] for line in response.text.strip().split("\n") if line.strip()]
+        except Exception as e:
+            ptprint(f"Error when reading indices: {e}", "ERROR", not self.args.json, indent=4)
+            return []
+
+        return indices
