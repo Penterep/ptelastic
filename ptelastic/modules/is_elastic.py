@@ -64,10 +64,11 @@ class IsElastic:
 
         ptprint(f"Full response: {response.text}", "ADDITIONS", self.args.verbose, colortext=True)
 
-        if "application/json" not in response.headers.get("content-type", "") and not self.kbn:
-            self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
-        elif self.kbn:
-            raise self.NotElasticsearch
+        if "application/json" not in response.headers.get("content-type", ""):
+            if self.kbn:
+                raise self.NotElasticsearch
+            else:
+                self.ptjsonlib.end_error("The host is not running Elasticsearch", self.args.json)
 
         if response.status_code == HTTPStatus.UNAUTHORIZED:
             response_json = response.json()
