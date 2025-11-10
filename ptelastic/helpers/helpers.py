@@ -72,9 +72,10 @@ class Helpers:
 
         if response.status_code != HTTPStatus.OK or json_status != HTTPStatus.OK:
             ptprint(
-                f"Error fetching indices. Received response: {response.status_code} {json.dumps(response.json(), indent=4)}",
+                f"Error fetching indices. Received response: {response.status_code}",
                 "ERROR",
                 not self.args.json, indent=4)
+            ptprint(f"Received response: {response.text}", "ADDITIONS", self.args.verbose, indent=4, colortext=True)
             return []
 
         try:
